@@ -19,6 +19,8 @@
 - Unlockable & selectable nodes
 - Customizable popovers for node content
 
+<img src="Assets/sample_img.png" alt="HexaSphereGrid Preview" style="width:100%; border-radius:12px;" />
+
 ---
 
 ## 📦 Installation
