@@ -15,8 +15,8 @@ enum ZoomLevel {
 
 private let zoomPresets: [ZoomLevel: CGFloat] = [
     .min: 0.2,
-    .normal: 1.0,
-    .max: 2.0
+    .normal: 0.75,
+    .max: 1.8
 ]
 
 /// Coefficient pour élargir la zone de rebond aux bords (1 = limite stricte, >1 = zone augmentée)
@@ -37,7 +37,7 @@ public struct HexaSphereGridView<Popover: View>: View {
     @State private var dragOffset = CGSize.zero
     
     @GestureState private var zoomScaleGesture: CGFloat = 1.0
-    @State private var zoomScale: CGFloat = 1.0
+    @State private var zoomScale: CGFloat = 0.75
     @State private var zoomLevel: ZoomLevel = .normal
     
     @State private var highlightedSphereNodeID: UUID? = nil
@@ -59,6 +59,32 @@ public struct HexaSphereGridView<Popover: View>: View {
                 hexagonViewsBackgroundLayer(geometry: geometry, offset: offset)
                 unlockPathsLayer(geometry: geometry, offset: offset)
                 hexagonViewsLayer(geometry: geometry, offset: offset)
+                
+                if let selectedID = highlightedSphereNodeID,
+                   let sphereNode = viewModel.sphereNodes.first(where: { $0.id == selectedID }),
+                   let content = popoverContent?(sphereNode) {
+                    
+                    let size = hexSize * sphereNode.weight * 1.8
+                    let pos = hexToPixel(sphereNode.coord, size: hexSize)
+                
+                    VStack(spacing: 0) {
+                        content
+                            .frame(minWidth: 120)
+                                                .padding( .all, 8)
+                                                .padding( .vertical, 16)
+                                                .background(
+                                                    CustomPopoverContainer()
+                                                        .fill(Color.white)
+                                                        .shadow(radius: 4)
+                                                )
+                    }
+                    .transition(.scale.combined(with: .opacity))
+                    .position(x: pos.x + offset.width,
+                              y: pos.y + offset.height + size / 2 + 20)
+                    .onTapGesture {
+                        highlightedSphereNodeID = nil
+                    }
+                }
             }
             .contentShape(Rectangle())
             .onTapGesture {
@@ -154,45 +180,29 @@ public struct HexaSphereGridView<Popover: View>: View {
     @ViewBuilder
     private func hexagonViewsLayer(geometry: GeometryProxy, offset: CGSize) -> some View {
         ForEach(viewModel.sphereNodes) { sphereNode in
-            let size = hexSize * sphereNode.weight * 1.8
-            let pos = hexToPixel(sphereNode.coord, size: hexSize)
-            SphereNodeView(state: viewModel.sphereNodeState(forID: sphereNode.id), zoomLevel: zoomLevel, name: sphereNode.name).frame(width: size, height: size)
-                .position(x: pos.x + offset.width,
-                          y: pos.y + offset.height)
-                .onTapGesture {
-                    guard zoomLevel != .min else { return }
-                    if highlightedSphereNodeID == nil {
-                        highlightedSphereNodeID = sphereNode.id
-                    } else {
-                        highlightedSphereNodeID = nil
-                    }
-                }
-        }
-        
-        if let selectedID = highlightedSphereNodeID,
-           let sphereNode = viewModel.sphereNodes.first(where: { $0.id == selectedID }) {
             
-            let size = hexSize * sphereNode.weight * 1.8
-            let pos = hexToPixel(sphereNode.coord, size: hexSize)
-            
-            if let content = popoverContent?(sphereNode) {
+            Group {
                 
-                content
-                    .frame(minWidth: 120)
-                    .padding( .all, 8)
-                    .padding( .vertical, 16)
-                    .background(
-                        CustomPopoverContainer()
-                            .fill(Color.white)
-                            .shadow(radius: 4)
-                    )
-                    .transition(.scale.combined(with: .opacity))
-                    .animation(.easeInOut(duration: 0.3), value: selectedID)
+                let size = hexSize * sphereNode.weight * 1.8
+                let pos = hexToPixel(sphereNode.coord, size: hexSize)
+                
+                SphereNodeView(state: viewModel.sphereNodeState(forID: sphereNode.id),
+                               zoomLevel: zoomLevel,
+                               name: sphereNode.name,
+                               image: viewModel.image(for: sphereNode),
+                               mainColor: viewModel.color(for: sphereNode)).frame(width: size, height: size)
                     .position(x: pos.x + offset.width,
-                              y: pos.y + offset.height + size / 2 + 20)
+                              y: pos.y + offset.height)
                     .onTapGesture {
-                        highlightedSphereNodeID = nil
+                        guard zoomLevel != .min else { return }
+
+                        if highlightedSphereNodeID != sphereNode.id {
+                            highlightedSphereNodeID = sphereNode.id
+                        } else {
+                            highlightedSphereNodeID = nil
+                        }
                     }
+                
             }
         }
         
@@ -210,7 +220,7 @@ public struct HexaSphereGridView<Popover: View>: View {
                 .shadow(radius: 4)
                 .transition(.scale.combined(with: .opacity))
                 .animation(.interpolatingSpring(stiffness: 100, damping: 12), value: sphereNode.id)
-                .position(x: pos.x + offset.width - size * 0.45,
+                .position(x: pos.x + offset.width - size * 0.4,
                           y: pos.y + offset.height - size * 0.2)
         }
     }

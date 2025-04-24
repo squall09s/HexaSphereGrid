@@ -5,20 +5,46 @@
 //  Created by Nicolas Laurent on 24/04/2025.
 //
 
-import Foundation
+import SwiftUI
 
+
+
+public protocol SphereNodeDataSource {
+    func image(for node: SphereNode) -> Image?
+    func color(for node: SphereNode) -> Color
+}
 
 public final class HexaSphereGridViewModel: ObservableObject {
     
     @Published public var currentSelectedSphereNode: SphereNode?
     @Published public var sphereNodes: [SphereNode] = []
- 
-    public init() {
-        
+    
+    public var dataSource: SphereNodeDataSource?
+    
+    private var imageCache: [UUID: Image] = [:]
+    
+    public init(dataSource: SphereNodeDataSource? = nil) {
+        self.dataSource = dataSource
     }
- 
+    
+    // Exemple d'utilisation dans ta vue ou logique
+    public func color(for node: SphereNode) -> Color {
+        dataSource?.color(for: node) ?? node.color
+    }
+    
+    public func image(for node: SphereNode) -> Image? {
+        if let cached = imageCache[node.id] {
+            return cached
+        } else if let generated = dataSource?.image(for: node) {
+            imageCache[node.id] = generated
+            return generated
+        } else {
+            return nil
+        }
+    }
+    
     public func sphereNodeState(forID id : UUID) -> HexagonState {
-     
+        
         guard let idx = sphereNodes.firstIndex(where: { $0.id == id }) else { return .locked }
         
         if sphereNodes[idx].isActivated {
@@ -26,7 +52,7 @@ public final class HexaSphereGridViewModel: ObservableObject {
             return .unlocked
             
         } else {
-         
+            
             /// Identifiants des cases déverrouillables (voisines des cases déjà unlockées)
             var unlockableSphereNodeIDs: Set<UUID> {
                 var set = Set<UUID>()

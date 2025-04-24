@@ -31,7 +31,17 @@ struct SphereNodeView: View {
     let state : HexagonState
     let zoomLevel: ZoomLevel
     let name: String
+    let image : Image?
+    let mainColor: Color
 
+    public init(state: HexagonState, zoomLevel: ZoomLevel, name: String, image: Image?, mainColor: Color = .black) {
+        self.state = state
+        self.zoomLevel = zoomLevel
+        self.name = name
+        self.image = image
+        self.mainColor = mainColor
+    }
+    
     private var color: Color {
         switch state {
         case .unlocked: return .white
@@ -44,20 +54,32 @@ struct SphereNodeView: View {
         ZStack {
             RoundedHexagon()
                 .fill(color)
-                .overlay(
-                    RoundedHexagon()
-                        .stroke(strokeColor, lineWidth: lineWidth)
-                )
+                
 
             if zoomLevel == .normal {
                 VStack {
-                    Image(systemName: "leaf.fill").resizable().scaledToFit().foregroundColor(contentColor)
+                    
+                    if let image = image {
+                        image
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(contentColor)
+                    }
+                    
                 }.padding(50)
             }
             
             if zoomLevel == .max {
                 VStack {
-                    Image(systemName: "leaf.fill").resizable().scaledToFit().foregroundColor(contentColor).padding(10)
+                    
+                    if let image = image {
+                        image
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(contentColor)
+                            .padding(10)
+                    }
+                    
                     Text(name)
                         .font(.caption)
                         .foregroundColor(contentColor)
@@ -69,30 +91,15 @@ struct SphereNodeView: View {
     private var contentColor: Color {
         switch state {
         case .unlocked:
-            return .black
+            return mainColor
         case .locked:
-            return .black.opacity(0.05)
+            return .black.opacity(0.3)
         case .unlockable:
-            return .black.opacity(0.5)
+            return .black.opacity(0.3)
         }
         
     }
     
-    private var strokeColor: Color {
-        switch zoomLevel {
-        case .min: return Color.white.opacity(0.7)
-        case .normal: return Color.white
-        case .max: return Color.white
-        }
-    }
-
-    private var lineWidth: CGFloat {
-        switch zoomLevel {
-        case .min: return 0
-        case .normal: return 0
-        case .max: return 0
-        }
-    }
 }
 
 struct RoundedHexagon: Shape {
@@ -152,7 +159,7 @@ struct RoundedHexagon: Shape {
 
 
 #Preview {
-    SphereNodeView(state: .locked, zoomLevel: .max, name: "hello")
-    SphereNodeView(state: .unlocked, zoomLevel: .normal, name: "hello")
-    SphereNodeView(state: .unlockable, zoomLevel: .min, name: "hello")
+    SphereNodeView(state: .locked, zoomLevel: .max, name: "hello", image: Image(systemName: "leaf.fill"))
+    SphereNodeView(state: .unlocked, zoomLevel: .normal, name: "hello", image: Image(systemName: "leaf.fill"))
+    SphereNodeView(state: .unlockable, zoomLevel: .min, name: "hello", image: Image(systemName: "leaf.fill"))
 }
