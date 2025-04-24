@@ -78,6 +78,36 @@ import HexaSphereGrid
 
 ---
 
+## 🎨 Customizing Appearance
+
+You can control the image and color of each node using a `SphereNodeDataSource`. Just pass a provider to the `HexaSphereGridModel`.
+
+### 👇 Define a provider
+
+```swift
+struct MyNodeStyleProvider: SphereNodeDataSource {
+    func image(for node: SphereNode) -> Image? {
+        return Image(...)
+    }
+
+    func color(for node: SphereNode) -> Color {
+        node.isActivated ? .green : .gray
+    }
+}
+```
+
+### 💡 Usage
+
+```swift
+@StateObject private var viewModel = HexaSphereGridModel(
+    dataSource: MyNodeStyleProvider()
+)
+```
+
+This makes your nodes visually dynamic, customizable, and theme-ready ✨
+
+---
+
 ## 🧱 Components
 
 | Component             | Description                                 |
