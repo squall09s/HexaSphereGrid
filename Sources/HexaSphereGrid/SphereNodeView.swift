@@ -93,7 +93,7 @@ struct SphereNodeView: View {
         case .unlocked:
             return mainColor
         case .locked:
-            return .black.opacity(0.3)
+            return .black.opacity(0.03)
         case .unlockable:
             return .black.opacity(0.3)
         }

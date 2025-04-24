@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import Foundation
 
 
 public protocol SphereNodeDataSource {
@@ -33,13 +33,21 @@ public final class HexaSphereGridViewModel: ObservableObject {
     }
     
     public func image(for node: SphereNode) -> Image? {
-        if let cached = imageCache[node.id] {
-            return cached
-        } else if let generated = dataSource?.image(for: node) {
-            imageCache[node.id] = generated
-            return generated
-        } else {
-            return nil
+        
+        if self.sphereNodeState(forID: node.id) == .locked {
+            
+            return Image(systemName: "seal.fill")
+            
+        }else{
+            
+            if let cached = imageCache[node.id] {
+                return cached
+            } else if let generated = dataSource?.image(for: node) {
+                imageCache[node.id] = generated
+                return generated
+            } else {
+                return nil
+            }
         }
     }
     

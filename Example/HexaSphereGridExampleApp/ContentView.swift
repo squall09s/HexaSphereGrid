@@ -16,6 +16,7 @@ struct ContentView: View {
     var body: some View {
         
         HexaSphereGridView(viewModel: viewModel) { sphereNode in
+            
             VStack {
                 
                 Text(sphereNode.name)
