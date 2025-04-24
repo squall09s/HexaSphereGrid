@@ -30,7 +30,7 @@
 Add this repository to your Xcode project:
 
 ```
-https://github.com/your-name/HexaSphereGrid
+https://github.com/squall09s/HexaSphereGrid
 ```
 
 Then import:
