@@ -14,10 +14,11 @@ public protocol SphereNodeDataSource {
     func color(for node: SphereNode) -> Color
 }
 
+
 public final class HexaSphereGridViewModel: ObservableObject {
     
     @Published public var currentSelectedSphereNode: SphereNode?
-    @Published public var sphereNodes: [SphereNode] = []
+    @Published var sphereNodes: [SphereNode] = []
     
     public var dataSource: SphereNodeDataSource?
     
@@ -25,6 +26,10 @@ public final class HexaSphereGridViewModel: ObservableObject {
     
     public init(dataSource: SphereNodeDataSource? = nil) {
         self.dataSource = dataSource
+    }
+    
+    public func configure(with rootNode : SphereNodeData){
+        self.sphereNodes = buildNodes(rootNode: rootNode)
     }
     
     // Exemple d'utilisation dans ta vue ou logique

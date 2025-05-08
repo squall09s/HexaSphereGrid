@@ -41,7 +41,14 @@ struct ContentView: View {
             }
         }.ignoresSafeArea()
         .onAppear {
-            viewModel.sphereNodes = loadSpheres()
+            
+            let url = Bundle.main.url(forResource: "FakeNodeData", withExtension: "json")!
+            let data = try? Data(contentsOf: url)
+            
+            if let data = data, let root = try? JSONDecoder().decode(SphereNodeData.self, from: data) {
+                viewModel.configure(with: root)
+            }
+            
         }
     }
 }
