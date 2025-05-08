@@ -7,26 +7,30 @@
 
 import Foundation
 import HexaSphereGrid
+import SwiftUI
+
+enum SphereNodeOrientation: String, Codable {
+    case topLeft
+    case topRight
+    case right
+    case bottomRight
+    case bottomLeft
+    case left
+}
 
 final class SphereNodeData: Codable, Hashable {
     
-    init(name: String, children_1: SphereNodeData? = nil, children_2: SphereNodeData? = nil, children_3: SphereNodeData? = nil, children_4: SphereNodeData? = nil, children_5: SphereNodeData? = nil, children_6: SphereNodeData? = nil) {
-        self.name = name
-        self.children_1 = children_1
-        self.children_2 = children_2
-        self.children_3 = children_3
-        self.children_4 = children_4
-        self.children_5 = children_5
-        self.children_6 = children_6
-    }
-    
     let name: String
-    let children_1: SphereNodeData?   // en haut‑gauche
-    let children_2: SphereNodeData?   // en haut‑droite
-    let children_3: SphereNodeData?   // à droite
-    let children_4: SphereNodeData?   // bas‑droite
-    let children_5: SphereNodeData?   // bas‑gauche
-    let children_6: SphereNodeData?   // à gauche
+    let color : Int
+    let orientation: SphereNodeOrientation?
+    let children: [SphereNodeData]?
+
+    init(name: String, orientation: SphereNodeOrientation? = nil, children: [SphereNodeData]? = nil, color : Int) {
+        self.name = name
+        self.orientation = orientation
+        self.children = children
+        self.color = color
+    }
 
     static func == (lhs: SphereNodeData, rhs: SphereNodeData) -> Bool {
         return lhs === rhs
@@ -44,20 +48,22 @@ func loadTree() throws -> SphereNodeData {
 }
 
 
+
+
+
 func loadSpheres() -> [SphereNode]{
     
     var sphereNodes: [SphereNode] = []
     
     let root: SphereNodeData = try! loadTree()
     
-    // 1) vecteurs axiaux pour les 6 directions
-    let directionOffsets = [
-        GridCoord(q: -1, r: 0),  // children_1 (haut‑gauche)
-        GridCoord(q:  0, r: -1), // children_2 (haut‑droite)
-        GridCoord(q:  1, r: -1), // children_3 (droite)
-        GridCoord(q:  1, r:  0), // children_4 (bas‑droite)
-        GridCoord(q:  0, r:  1), // children_5 (bas‑gauche)
-        GridCoord(q: -1, r:  1)  // children_6 (gauche)
+    let directionOffsetMap: [SphereNodeOrientation: GridCoord] = [
+        .topLeft:     GridCoord(q: -1, r: 0),
+        .topRight:    GridCoord(q:  0, r: -1),
+        .right:       GridCoord(q:  1, r: -1),
+        .bottomRight: GridCoord(q:  1, r:  0),
+        .bottomLeft:  GridCoord(q:  0, r:  1),
+        .left:        GridCoord(q: -1, r:  1)
     ]
     
     // 2) fonction recursive qui construit les sphereNodes et lie parent→enfants
@@ -68,23 +74,18 @@ func loadSpheres() -> [SphereNode]{
             id:           id,
             coord:        coord,
             name:         node.name,
-            color:        .blue,
+            color:        Color("color_main_palette_\(node.color)"),
             weight:       1,
             linkedNodeIDs:  [],
             isActivated:   false
         ))
         let idx = sphereNodes.count - 1
         
-        // on parcourt chaque slot enfants_1…_6
-        let slots: [SphereNodeData?] = [
-            node.children_1, node.children_2, node.children_3,
-            node.children_4, node.children_5, node.children_6
-        ]
-        for (i, child) in slots.enumerated() {
-            guard let child = child else { continue }
-            let off = directionOffsets[i]
-            let childCoord = GridCoord(q: coord.q + off.q,
-                                      r: coord.r + off.r)
+        for child in node.children ?? [] {
+            guard let orientation = child.orientation,
+                  let offset = directionOffsetMap[orientation] else { continue }
+            let childCoord = GridCoord(q: coord.q + offset.q,
+                                       r: coord.r + offset.r)
             let childID = traverse(child, at: childCoord)
             sphereNodes[idx].linkedNodeIDs.append(childID)
         }

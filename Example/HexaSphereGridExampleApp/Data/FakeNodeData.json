@@ -1,98 +1,149 @@
 {
   "name": "Catégories",
-  "description": "Ensemble des catégories",
-  "children_1": {
-    "name": "Arts",
-    "description": "Espaces physiques dédiés aux différentes formes d’expression artistique.",
-    "children_1": {
-      "name": "Spectacles",
-      "description": "Théâtres, salles de spectacle et verrières pour représentations en direct.",
-      "children_1": {
-        "name": "Galeries",
-        "description": "Lieux d’exposition pour œuvres visuelles.",
-        "children_1": {
-          "name": "Musique",
-          "description": "Salles de concerts, studios et festivals où vibrent tous les styles.",
-          "children_2": {
-            "name": "Littérature",
-            "description": "Bibliothèques, salons de lecture et librairies indépendantes animés par la passion des mots."
-          }
+  "color" : 0,
+  "children": [
+    {
+      "name": "Arts",
+      "orientation": "topLeft",
+      "color" : 1,
+      "children": [
+        {
+          "name": "Spectacles",
+          "orientation": "topLeft",
+          "color" : 4,
+          "children": [
+            {
+              "name": "Galeries",
+              "orientation": "topLeft",
+              "color" : 0,
+              "children": [
+                {
+                  "name": "Musique",
+                  "orientation": "topLeft",
+                  "color" : 4,
+                  "children": [
+                    {
+                      "name": "Littérature",
+                      "orientation": "topRight",
+                      "color" : 2,
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         }
-      }
-    }
-  },
-  "children_2": {
-    "name": "Sciences",
-    "description": "Lieux de recherche, d’expérimentation et de diffusion scientifique.",
-    "children_2": {
-      "name": "Observatoires",
-      "description": "Sites d’observation astronomique et projections immersives du ciel étoilé.",
-      "children_2": {
-        "name": "Makerspaces",
-        "description": "Ateliers partagés pour la fabrication numérique et artisanale."
-      },
+      ]
     },
-    "children_1": {
-      "name": "Rencontres",
-      "description": "Événements et espaces dédiés aux échanges professionnels et scientifiques."
-    }
-  },
-  "children_3": {
-    "name": "Lifestyle",
-    "description": "Lieux de vie quotidienne et points de rencontre pour se détendre et socialiser.",
-    "children_3": {
-      "name": "Gastronomie",
-      "description": "Restaurants, marchés et ateliers culinaires pour passionnés de saveurs.",
-      "children_3": {
-        "name": "Bien‑être",
-        "description": "Spas, centres thermaux et parcs urbains pour se ressourcer."
-      },
-      "children_2": {
-        "name": "Voyages",
-        "description": "Agences, auberges et points de rencontre pour explorer le monde."
-      }
-    }
-    
-  },
-  "children_5": {
-    "name": "Sports",
-    "description": "Infrastructures et espaces naturels pour la pratique d’activités physiques variées.",
-    "children_5": {
-      "name": "Installations",
-      "description": "Gymnases, piscines et salles équipées pour l’entraînement.",
-      "children_5": {
-        "name": "Terrains",
-        "description": "Stades et aires de plein air pour sports collectifs et individuels."
-      },
-      "children_4": {
-        "name": "Nature",
-        "description": "Sentiers et itinéraires balisés pour courir, randonner ou faire du vélo."
-      }
-    }
-    
-  },
-  "children_6": {
-    "name": "Sorties & Vie Nocturne",
-    "description": "Lieux branchés pour se retrouver entre amis, partager des moments festifs et papoter librement jusqu’au petit matin.",
-    "children_6": {
-      "name": "Bars & Pubs",
-      "description": "Ambiances conviviales pour siroter un verre et lancer des discussions improvisées.",
-      "children_5": {
-        "name": "Discothèques",
-        "description": "Pistes de danse, DJ sets et lumières stroboscopiques pour libérer votre énergie."
-      },
-      "children_6": {
-        "name": "Restaurants festifs",
-        "description": "Tables conviviales où l’on mange bien avant de danser ou discuter dans une vibe animée.",
-        "children_6": {
-          "name": "Cafés & Salons",
-          "description": "Espaces cosy pour pauses café, discussions libres et instants cocooning."
+    {
+      "name": "Sciences",
+      "orientation": "topRight",
+      "color" : 1,
+      "children": [
+        {
+          "name": "Rencontres",
+          "orientation": "topLeft",
+          "color" : 2,
+          "children": []
         },
-        "children_5": {
-          "name": "Soirées & Événements",
-          "description": "Moments clés de socialisation libre, sans obligation de thème précis."
+        {
+          "name": "Observatoires",
+          "orientation": "topRight",
+          "color" : 3,
+          "children": [
+            {
+              "name": "Makerspaces",
+              "orientation": "topRight",
+              "color" : 0
+            }
+          ]
         }
-      }
+      ]
+    },
+    {
+      "name": "Lifestyle",
+      "orientation": "right",
+      "color" : 0,
+      "children": [
+        {
+          "name": "Gastronomie",
+          "orientation": "right",
+          "color" : 0,
+          "children": [
+            {
+              "name": "Voyages",
+              "orientation": "topRight",
+              "color" : 4
+            },
+            {
+              "name": "Bien‑être",
+              "orientation": "right",
+              "color" : 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Sports",
+      "orientation": "bottomLeft",
+      "color" : 3,
+      "children": [
+        {
+          "name": "Installations",
+          "orientation": "bottomLeft",
+          "color" : 2,
+          "children": [
+            {
+              "name": "Nature",
+              "orientation": "bottomRight",
+              "color" : 1
+            },
+            {
+              "name": "Terrains",
+              "orientation": "bottomLeft",
+              "color" : 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Sorties & Vie Nocturne",
+      "orientation": "left",
+      "color" : 0,
+      "children": [
+        {
+          "name": "Bars & Pubs",
+          "orientation": "left",
+          "color" : 2,
+          "children": [
+            {
+              "name": "Discothèques",
+              "orientation": "bottomLeft",
+              "color" : 0
+            },
+            {
+              "name": "Restaurants festifs",
+              "orientation": "left",
+              "color" : 2,
+              "children": [
+                {
+                  "name": "Soirées & Événements",
+                  "orientation": "bottomLeft",
+                  "color" : 2
+                },
+                {
+                  "name": "Cafés & Salons",
+                  "orientation": "left",
+                  "color" : 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
-  }
+  ]
 }
