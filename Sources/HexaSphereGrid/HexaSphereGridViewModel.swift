@@ -22,7 +22,7 @@ public final class HexaSphereGridViewModel: ObservableObject {
     
     public var dataSource: SphereNodeDataSource?
     
-    private var imageCache: [UUID: Image] = [:]
+    private var imageCache: [String: Image] = [:]
     
     public init(dataSource: SphereNodeDataSource? = nil) {
         self.dataSource = dataSource
@@ -56,7 +56,7 @@ public final class HexaSphereGridViewModel: ObservableObject {
         }
     }
     
-    public func sphereNodeState(forID id : UUID) -> HexagonState {
+    public func sphereNodeState(forID id : String) -> HexagonState {
         
         guard let idx = sphereNodes.firstIndex(where: { $0.id == id }) else { return .locked }
         
@@ -67,8 +67,8 @@ public final class HexaSphereGridViewModel: ObservableObject {
         } else {
             
             /// Identifiants des cases déverrouillables (voisines des cases déjà unlockées)
-            var unlockableSphereNodeIDs: Set<UUID> {
-                var set = Set<UUID>()
+            var unlockableSphereNodeIDs: Set<String> {
+                var set = Set<String>()
                 for sphereNode in sphereNodes where sphereNode.isActivated {
                     set.formUnion(sphereNode.linkedNodeIDs)
                 }
@@ -81,7 +81,7 @@ public final class HexaSphereGridViewModel: ObservableObject {
     }
     
     /// Tente de déverrouiller une case si elle est voisine d’une case unlockée
-    public func unlockSphereNode(withID id: UUID) {
+    public func unlockSphereNode(withID id: String) {
         if case .unlockable = sphereNodeState(forID: id) {
             guard let idx = sphereNodes.firstIndex(where: { $0.id == id }) else { return }
             sphereNodes[idx].isActivated = true

@@ -40,7 +40,7 @@ public struct HexaSphereGridView<Popover: View>: View {
     @State private var zoomScale: CGFloat = 0.75
     @State private var zoomLevel: ZoomLevel = .normal
     
-    @State private var highlightedSphereNodeID: UUID? = nil
+    @State private var highlightedSphereNodeID: String? = nil
    
     private let hexSize: CGFloat = 90
     /// Espace (positif pour plus d’écart, négatif pour rapprocher) entre les centres des hexagones
@@ -89,7 +89,6 @@ public struct HexaSphereGridView<Popover: View>: View {
             .contentShape(Rectangle())
             .onTapGesture {
                 highlightedSphereNodeID = nil
-                viewModel.currentSelectedSphereNode = nil
             }
             .scaleEffect(zoomScale * zoomScaleGesture)
             .animation(.easeInOut(duration: 0.2), value: zoomScale * zoomScaleGesture)

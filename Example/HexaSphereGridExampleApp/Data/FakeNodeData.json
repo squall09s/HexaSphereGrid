@@ -1,31 +1,37 @@
 {
   "name": "Catégories",
+  "id": "0",
   "color" : 0,
   "children": [
     {
       "name": "Arts",
       "orientation": "topLeft",
       "color" : 1,
+      "id": "1",
       "children": [
         {
           "name": "Spectacles",
           "orientation": "topLeft",
           "color" : 4,
+          "id": "2",
           "children": [
             {
               "name": "Galeries",
               "orientation": "topLeft",
               "color" : 0,
+              "id": "3",
               "children": [
                 {
                   "name": "Musique",
                   "orientation": "topLeft",
                   "color" : 4,
+                  "id": "4",
                   "children": [
                     {
                       "name": "Littérature",
                       "orientation": "topRight",
                       "color" : 2,
+                      "id": "5",
                       "children": []
                     }
                   ]
@@ -40,21 +46,25 @@
       "name": "Sciences",
       "orientation": "topRight",
       "color" : 1,
+      "id": "6",
       "children": [
         {
           "name": "Rencontres",
           "orientation": "topLeft",
           "color" : 2,
+          "id": "7",
           "children": []
         },
         {
           "name": "Observatoires",
           "orientation": "topRight",
           "color" : 3,
+          "id": "8",
           "children": [
             {
               "name": "Makerspaces",
               "orientation": "topRight",
+              "id": "9",
               "color" : 0
             }
           ]
@@ -65,20 +75,24 @@
       "name": "Lifestyle",
       "orientation": "right",
       "color" : 0,
+      "id": "10",
       "children": [
         {
           "name": "Gastronomie",
           "orientation": "right",
           "color" : 0,
+          "id": "11",
           "children": [
             {
               "name": "Voyages",
               "orientation": "topRight",
-              "color" : 4
+              "color" : 4,
+              "id": "12",
             },
             {
               "name": "Bien‑être",
               "orientation": "right",
+              "id": "13",
               "color" : 1
             }
           ]
@@ -89,20 +103,24 @@
       "name": "Sports",
       "orientation": "bottomLeft",
       "color" : 3,
+      "id": "14",
       "children": [
         {
           "name": "Installations",
           "orientation": "bottomLeft",
           "color" : 2,
+          "id": "15",
           "children": [
             {
               "name": "Nature",
               "orientation": "bottomRight",
+              "id": "16",
               "color" : 1
             },
             {
               "name": "Terrains",
               "orientation": "bottomLeft",
+              "id": "17",
               "color" : 0
             }
           ]
@@ -113,30 +131,36 @@
       "name": "Sorties & Vie Nocturne",
       "orientation": "left",
       "color" : 0,
+      "id": "18",
       "children": [
         {
           "name": "Bars & Pubs",
           "orientation": "left",
           "color" : 2,
+          "id": "19",
           "children": [
             {
               "name": "Discothèques",
               "orientation": "bottomLeft",
+              "id": "20",
               "color" : 0
             },
             {
               "name": "Restaurants festifs",
               "orientation": "left",
+              "id": "21",
               "color" : 2,
               "children": [
                 {
                   "name": "Soirées & Événements",
                   "orientation": "bottomLeft",
+                  "id": "22",
                   "color" : 2
                 },
                 {
                   "name": "Cafés & Salons",
                   "orientation": "left",
+                  "id": "23",
                   "color" : 1
                 }
               ]

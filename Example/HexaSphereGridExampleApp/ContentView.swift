@@ -70,7 +70,7 @@ struct MyNodeStyleProvider: SphereNodeDataSource {
 
     func color(for node: SphereNode) -> Color {
         
-        let hash = node.id.uuidString.hashValue
+        let hash = node.id.hashValue
          
         switch abs(hash % 4) {
             case 0:

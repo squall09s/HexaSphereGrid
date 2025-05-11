@@ -19,7 +19,7 @@ public struct GridCoord: Hashable {
 
 public struct SphereNode: Identifiable {
     
-    public init(id : UUID, coord: GridCoord, name: String, color: Color, weight: CGFloat, linkedNodeIDs: [UUID] = [], isActivated: Bool = false) {
+    public init(id : String, coord: GridCoord, name: String, color: Color, weight: CGFloat, linkedNodeIDs: [String] = [], isActivated: Bool = false) {
         self.id = id
         self.coord = coord
         self.name = name
@@ -29,14 +29,22 @@ public struct SphereNode: Identifiable {
         self.isActivated = isActivated
     }
     
-    public var id = UUID()
+    public var id : String
     public let coord: GridCoord
     public let name: String
     public var color: Color
     public var weight: CGFloat
-    public var linkedNodeIDs: [UUID] = []
+    public var linkedNodeIDs: [String] = []
     /// État d'activation (false = locked, true = activated)
     public var isActivated: Bool = false
+    
+    public static func == (lhs: SphereNode, rhs: SphereNode) -> Bool {
+        return lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        id.hashValue
+    }
     
 }
 
@@ -52,12 +60,14 @@ public enum SphereNodeOrientation: String, Codable {
 
 public final class SphereNodeData: Codable, Hashable {
     
+    let id : String
     let name: String
     let color : Int
     let orientation: SphereNodeOrientation?
     let children: [SphereNodeData]?
 
-    init(name: String, orientation: SphereNodeOrientation? = nil, children: [SphereNodeData]? = nil, color : Int) {
+    init(id : String, name: String, orientation: SphereNodeOrientation? = nil, children: [SphereNodeData]? = nil, color : Int) {
+        self.id = id
         self.name = name
         self.orientation = orientation
         self.children = children
@@ -87,8 +97,8 @@ public func buildNodes(rootNode : SphereNodeData) -> [SphereNode] {
     ]
     
     // 2) fonction recursive qui construit les sphereNodes et lie parent→enfants
-    func traverse(_ node: SphereNodeData, at coord: GridCoord) -> UUID {
-        let id = UUID()
+    func traverse(_ node: SphereNodeData, at coord: GridCoord) -> String {
+        let id = node.id
         // on crée d’abord le sphereNode sans enfants
         sphereNodes.append(SphereNode(
             id:           id,
@@ -99,6 +109,7 @@ public func buildNodes(rootNode : SphereNodeData) -> [SphereNode] {
             linkedNodeIDs:  [],
             isActivated:   false
         ))
+        
         let idx = sphereNodes.count - 1
         
         for child in node.children ?? [] {
