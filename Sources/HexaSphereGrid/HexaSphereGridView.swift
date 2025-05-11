@@ -159,19 +159,9 @@ public struct HexaSphereGridView<Popover: View>: View {
     
     @ViewBuilder
     private func unlockPathsLayer(geometry: GeometryProxy, offset: CGSize) -> some View {
-        ForEach(viewModel.sphereNodes.filter { $0.isActivated }, id: \.id) { sphereNode in
+        ForEach(viewModel.sphereNodes.filter { $0.unlocked }, id: \.id) { sphereNode in
             ForEach(sphereNode.linkedNodeIDs, id: \.self) { childID in
-                if let child = viewModel.sphereNodes.first(where: { $0.id == childID }), child.isActivated {
-                    let parentPoint = hexToPixel(sphereNode.coord, size: hexSize)
-                    let childPoint = hexToPixel(child.coord, size: hexSize)
-                    Path { path in
-                        path.move(to: CGPoint(x: parentPoint.x + offset.width,
-                                              y: parentPoint.y + offset.height))
-                        path.addLine(to: CGPoint(x: childPoint.x + offset.width,
-                                                 y: childPoint.y + offset.height))
-                    }
-                    .stroke(Color.white, lineWidth: 15)
-                }
+                UnlockPathLineView(parent: sphereNode, childID: childID, allNodes: viewModel.sphereNodes, offset: offset, hexSize: hexSize)
             }
         }
     }
@@ -245,6 +235,36 @@ public struct HexaSphereGridView<Popover: View>: View {
         // Calculate center-to-center spacing including custom spacing
         let width = size * sqrt(3) + hexSpacing
         let height = size * 3/2 + hexSpacing
+        let x = width * (CGFloat(hex.q) + CGFloat(hex.r) / 2)
+        let y = height * CGFloat(hex.r)
+        return CGPoint(x: x, y: y)
+    }
+}
+
+private struct UnlockPathLineView: View {
+    let parent: SphereNode
+    let childID: String
+    let allNodes: [SphereNode]
+    let offset: CGSize
+    let hexSize: CGFloat
+
+    var body: some View {
+        if let child = allNodes.first(where: { $0.id == childID }), child.unlocked {
+            let parentPoint = hexToPixel(parent.coord, size: hexSize)
+            let childPoint = hexToPixel(child.coord, size: hexSize)
+            Path { path in
+                path.move(to: CGPoint(x: parentPoint.x + offset.width,
+                                      y: parentPoint.y + offset.height))
+                path.addLine(to: CGPoint(x: childPoint.x + offset.width,
+                                         y: childPoint.y + offset.height))
+            }
+            .stroke(Color.white, lineWidth: 15)
+        }
+    }
+
+    private func hexToPixel(_ hex: GridCoord, size: CGFloat) -> CGPoint {
+        let width = size * sqrt(3)
+        let height = size * 3/2
         let x = width * (CGFloat(hex.q) + CGFloat(hex.r) / 2)
         let y = height * CGFloat(hex.r)
         return CGPoint(x: x, y: y)

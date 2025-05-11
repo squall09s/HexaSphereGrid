@@ -19,14 +19,14 @@ public struct GridCoord: Hashable {
 
 public struct SphereNode: Identifiable {
     
-    public init(id : String, coord: GridCoord, name: String, color: Color, weight: CGFloat, linkedNodeIDs: [String] = [], isActivated: Bool = false) {
+    public init(id : String, coord: GridCoord, name: String, color: Color, weight: CGFloat, linkedNodeIDs: [String] = [], unlocked: Bool = false) {
         self.id = id
         self.coord = coord
         self.name = name
         self.color = color
         self.weight = weight
         self.linkedNodeIDs = linkedNodeIDs
-        self.isActivated = isActivated
+        self.unlocked = unlocked
     }
     
     public var id : String
@@ -35,8 +35,9 @@ public struct SphereNode: Identifiable {
     public var color: Color
     public var weight: CGFloat
     public var linkedNodeIDs: [String] = []
+    
     /// État d'activation (false = locked, true = activated)
-    public var isActivated: Bool = false
+    public var unlocked: Bool = false
     
     public static func == (lhs: SphereNode, rhs: SphereNode) -> Bool {
         return lhs.id == rhs.id
@@ -63,15 +64,17 @@ public final class SphereNodeData: Codable, Hashable {
     let id : String
     let name: String
     let color : Int
+    let unlocked : Bool?
     let orientation: SphereNodeOrientation?
     let children: [SphereNodeData]?
 
-    init(id : String, name: String, orientation: SphereNodeOrientation? = nil, children: [SphereNodeData]? = nil, color : Int) {
+    init(id: String, name: String, orientation: SphereNodeOrientation? = nil, children: [SphereNodeData]? = nil, color: Int, unlocked: Bool? = nil) {
         self.id = id
         self.name = name
         self.orientation = orientation
         self.children = children
         self.color = color
+        self.unlocked = unlocked
     }
 
     public static func == (lhs: SphereNodeData, rhs: SphereNodeData) -> Bool {
@@ -107,7 +110,7 @@ public func buildNodes(rootNode : SphereNodeData) -> [SphereNode] {
             color:        Color("color_main_palette_\(node.color)"),
             weight:       1,
             linkedNodeIDs:  [],
-            isActivated:   false
+            unlocked:   node.unlocked ?? false
         ))
         
         let idx = sphereNodes.count - 1
@@ -125,10 +128,6 @@ public func buildNodes(rootNode : SphereNodeData) -> [SphereNode] {
     
     // 3) on lance la récursion depuis le centre
     let rootID = traverse(rootNode, at: GridCoord(q: 0, r: 0))
-    // 4) on déverrouille la racine
-    if let i = sphereNodes.firstIndex(where: { $0.id == rootID }) {
-        sphereNodes[i].isActivated = true
-    }
     
     return sphereNodes
     

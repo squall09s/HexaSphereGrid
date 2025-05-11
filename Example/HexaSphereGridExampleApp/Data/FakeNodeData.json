@@ -2,6 +2,7 @@
   "name": "Catégories",
   "id": "0",
   "color" : 0,
+  "unlocked" : true,
   "children": [
     {
       "name": "Arts",
