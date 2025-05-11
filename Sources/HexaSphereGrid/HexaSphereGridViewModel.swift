@@ -30,6 +30,12 @@ public final class HexaSphereGridViewModel: ObservableObject {
     
     public func configure(with rootNode : SphereNodeData){
         self.sphereNodes = buildNodes(rootNode: rootNode)
+        
+        if let currentNodeID = rootNode.findCurrentNode()?.id {
+            self.currentSelectedSphereNode = self.sphereNodes.first(where: { _node in
+                return _node.id == currentNodeID
+            })
+        }
     }
     
     // Exemple d'utilisation dans ta vue ou logique

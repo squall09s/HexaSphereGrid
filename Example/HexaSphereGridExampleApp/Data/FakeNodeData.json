@@ -9,6 +9,8 @@
       "orientation": "topLeft",
       "color" : 1,
       "id": "1",
+      "unlocked" : true,
+      "isCurrentNode" : true,
       "children": [
         {
           "name": "Spectacles",

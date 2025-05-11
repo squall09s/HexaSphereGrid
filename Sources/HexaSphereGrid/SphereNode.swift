@@ -86,6 +86,20 @@ public final class SphereNodeData: Codable, Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(ObjectIdentifier(self))
     }
+    
+    func findCurrentNode() -> SphereNodeData? {
+        if isCurrentNode == true {
+            return self
+        }
+        for child in children ?? [] {
+            if let found = child.findCurrentNode() {
+                return found
+            }
+        }
+        return nil
+    }
+        
+    
 }
 
 public func buildNodes(rootNode : SphereNodeData) -> [SphereNode] {
