@@ -19,7 +19,7 @@ public struct GridCoord: Hashable {
 
 public struct SphereNode: Identifiable {
     
-    public init(id : String, coord: GridCoord, name: String, color: Color, weight: CGFloat, linkedNodeIDs: [String] = [], unlocked: Bool = false) {
+    public init(id : String, coord: GridCoord, name: String, color: Color, weight: CGFloat, linkedNodeIDs: [String] = [], unlocked: Bool = false, isSelected : Bool = false) {
         self.id = id
         self.coord = coord
         self.name = name
@@ -27,6 +27,7 @@ public struct SphereNode: Identifiable {
         self.weight = weight
         self.linkedNodeIDs = linkedNodeIDs
         self.unlocked = unlocked
+        self.isSelected = isSelected
     }
     
     public var id : String
@@ -38,6 +39,7 @@ public struct SphereNode: Identifiable {
     
     /// État d'activation (false = locked, true = activated)
     public var unlocked: Bool = false
+    public var isSelected : Bool = false
     
     public static func == (lhs: SphereNode, rhs: SphereNode) -> Bool {
         return lhs.id == rhs.id
