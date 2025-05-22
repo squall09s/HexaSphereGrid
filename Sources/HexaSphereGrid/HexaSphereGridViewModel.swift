@@ -40,7 +40,7 @@ public final class HexaSphereGridViewModel: ObservableObject {
     
     // Exemple d'utilisation dans ta vue ou logique
     public func color(for node: SphereNode) -> Color {
-        dataSource?.color(for: node) ?? node.color
+        dataSource?.color(for: node) ?? Color.black
     }
     
     public func image(for node: SphereNode) -> Image? {
