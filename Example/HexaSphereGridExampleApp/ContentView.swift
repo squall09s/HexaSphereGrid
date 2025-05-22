@@ -27,7 +27,11 @@ struct ContentView: View {
                     
                     if viewModel.currentSelectedSphereNode?.id != sphereNode.id {
                         Button("Select") {
+                            
                             viewModel.currentSelectedSphereNode = sphereNode
+                            
+                            //let Value = sphereNode.metadataValue(forKey: "metadata_int", as: Int.self)
+                            //let Value = sphereNode.metadataValue(forKey: "metadata_string", as: String.self)
                         }
                     }
                     
@@ -45,8 +49,18 @@ struct ContentView: View {
             let url = Bundle.main.url(forResource: "FakeNodeData", withExtension: "json")!
             let data = try? Data(contentsOf: url)
             
-            if let data = data, let root = try? JSONDecoder().decode(SphereNodeData.self, from: data) {
-                viewModel.configure(with: root)
+            if let data = data {
+                
+                do {
+                    let root = try JSONDecoder().decode(SphereNodeData.self, from: data)
+                    viewModel.configure(with: root)
+                } catch {
+                    print(error)
+                }
+                
+                
+            } else {
+                print("Could not load data file.")
             }
             
         }

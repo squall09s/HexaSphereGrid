@@ -17,24 +17,56 @@ public struct GridCoord: Hashable {
     }
 }
 
+
+
+public enum CustomCodableValue: Codable, Hashable {
+    
+    case int(Int)
+    case string(String)
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let intVal = try? container.decode(Int.self) {
+            self = .int(intVal)
+        } else if let strVal = try? container.decode(String.self) {
+            self = .string(strVal)
+        } else {
+            throw DecodingError.typeMismatch(
+                CustomCodableValue.self,
+                DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unsupported type")
+            )
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        switch self {
+        case .int(let value):
+            try container.encode(value)
+        case .string(let value):
+            try container.encode(value)
+        }
+    }
+}
+
 public struct SphereNode: Identifiable {
     
-    public init(id : String, coord: GridCoord, name: String, color: Int, weight: CGFloat, linkedNodeIDs: [String] = [], unlocked: Bool = false) {
+    public init(id : String, coord: GridCoord, name: String, weight: CGFloat, linkedNodeIDs: [String] = [], unlocked: Bool = false, metadata: [String: CustomCodableValue]? = nil) {
         self.id = id
         self.coord = coord
         self.name = name
-        self.color = color
         self.weight = weight
         self.linkedNodeIDs = linkedNodeIDs
         self.unlocked = unlocked
+        self.metadata = metadata
     }
     
     public var id : String
     public let coord: GridCoord
     public let name: String
-    public var color: Int
     public var weight: CGFloat
     public var linkedNodeIDs: [String] = []
+    public var metadata: [String: CustomCodableValue]?
     
     /// État d'activation (false = locked, true = activated)
     public var unlocked: Bool = false
@@ -46,6 +78,21 @@ public struct SphereNode: Identifiable {
     public func hash(into hasher: inout Hasher) {
         id.hashValue
     }
+    
+    
+    public func metadataValue<T>(forKey key: String, as type: T.Type) -> T? {
+        guard let value = metadata?[key] else { return nil }
+        
+        switch (value, T.self) {
+        case let (.int(intVal), is Int.Type):
+            return intVal as? T
+        case let (.string(strVal), is String.Type):
+            return strVal as? T
+        default:
+            return nil
+        }
+    }
+    
     
 }
 
@@ -63,22 +110,13 @@ public final class SphereNodeData: Codable, Hashable {
     
     let id : String
     let name: String
-    let color : Int
     let unlocked : Bool?
     let orientation: SphereNodeOrientation?
     let children: [SphereNodeData]?
     let isCurrentNode: Bool?
-
-    init(id: String, name: String, orientation: SphereNodeOrientation? = nil, children: [SphereNodeData]? = nil, color: Int, unlocked: Bool? = nil, isCurrentNode: Bool = false) {
-        self.id = id
-        self.name = name
-        self.orientation = orientation
-        self.children = children
-        self.color = color
-        self.unlocked = unlocked
-        self.isCurrentNode = isCurrentNode
-    }
-
+    
+    let metadata: [String: CustomCodableValue]?
+    
     public static func == (lhs: SphereNodeData, rhs: SphereNodeData) -> Bool {
         return lhs === rhs
     }
@@ -99,7 +137,6 @@ public final class SphereNodeData: Codable, Hashable {
         return nil
     }
         
-    
 }
 
 public func buildNodes(rootNode : SphereNodeData) -> [SphereNode] {
@@ -123,10 +160,10 @@ public func buildNodes(rootNode : SphereNodeData) -> [SphereNode] {
             id:           id,
             coord:        coord,
             name:         node.name,
-            color:        node.color,
             weight:       1,
             linkedNodeIDs:  [],
-            unlocked:   node.unlocked ?? false
+            unlocked:   node.unlocked ?? false,
+            metadata: node.metadata
         ))
         
         let idx = sphereNodes.count - 1
