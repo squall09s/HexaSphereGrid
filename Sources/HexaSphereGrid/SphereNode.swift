@@ -23,11 +23,14 @@ public enum CustomCodableValue: Codable, Hashable {
     
     case int(Int)
     case string(String)
+    case double(Double)
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         if let intVal = try? container.decode(Int.self) {
             self = .int(intVal)
+        }else if let doubleVal = try? container.decode(Double.self) {
+            self = .double(doubleVal)
         } else if let strVal = try? container.decode(String.self) {
             self = .string(strVal)
         } else {
@@ -44,6 +47,8 @@ public enum CustomCodableValue: Codable, Hashable {
         case .int(let value):
             try container.encode(value)
         case .string(let value):
+            try container.encode(value)
+        case .double(let value):
             try container.encode(value)
         }
     }
@@ -86,6 +91,8 @@ public struct SphereNode: Identifiable {
         switch (value, T.self) {
         case let (.int(intVal), is Int.Type):
             return intVal as? T
+        case let (.double(doubleVal), is Double.Type):
+            return doubleVal as? T
         case let (.string(strVal), is String.Type):
             return strVal as? T
         default:
