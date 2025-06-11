@@ -18,7 +18,7 @@ public protocol SphereNodeDataSource {
 public final class HexaSphereGridViewModel: ObservableObject {
     
     @Published public var currentSelectedSphereNode: SphereNode?
-    @Published var sphereNodes: [SphereNode] = []
+    @Published public var sphereNodes: [SphereNode] = []
     
     public var dataSource: SphereNodeDataSource?
     
