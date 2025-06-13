@@ -22,7 +22,6 @@ struct HexagonViewBackground: View {
                 .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
         }
     }
-
 }
 
 
@@ -33,13 +32,17 @@ struct SphereNodeView: View {
     let name: String
     let image : Image?
     let mainColor: Color
+    let progress: Double?
+    let isSelected: Bool
 
-    public init(state: HexagonState, zoomLevel: ZoomLevel, name: String, image: Image?, mainColor: Color = .black) {
+    public init(state: HexagonState, zoomLevel: ZoomLevel, name: String, image: Image?, mainColor: Color = .black, progress: Double? = nil, isSelected : Bool) {
         self.state = state
         self.zoomLevel = zoomLevel
         self.name = name
         self.image = image
         self.mainColor = mainColor
+        self.progress = progress
+        self.isSelected = isSelected
     }
     
     private var color: Color {
@@ -54,7 +57,21 @@ struct SphereNodeView: View {
         ZStack {
             RoundedHexagon()
                 .fill(color)
-                
+               
+            if zoomLevel == .normal || zoomLevel == .max, let progress = progress, state == .unlocked {
+                GeometryReader { geo in
+                    ZStack {
+                        Capsule()
+                            .fill(Color(red: 217/255, green: 217/255, blue: 217/255))
+                            .frame(width: 10, height: geo.size.height * 0.4)
+                            .offset(x: geo.size.width * 0.8, y: geo.size.height * 0.3)
+                        Capsule()
+                            .fill( self.isSelected ? contentColor : Color(red: 182/255, green: 182/255, blue: 182/255))
+                            .frame(width: 10, height: geo.size.height * 0.4 * progress)
+                            .offset(x: geo.size.width * 0.8, y: geo.size.height * 0.3 + ((geo.size.height * 0.4) - (geo.size.height * 0.4 * progress))/2.0 )
+                    }
+                }
+            }
 
             if zoomLevel == .normal {
                 VStack {
@@ -65,6 +82,8 @@ struct SphereNodeView: View {
                             .scaledToFit()
                             .foregroundColor(contentColor)
                     }
+                    
+                    
                     
                 }.padding(50)
             }
@@ -83,6 +102,8 @@ struct SphereNodeView: View {
                     Text(name)
                         .font(.caption)
                         .foregroundColor(contentColor)
+                    
+                    
                 }.padding(50)
             }
         }
@@ -159,7 +180,7 @@ struct RoundedHexagon: Shape {
 
 
 #Preview {
-    SphereNodeView(state: .locked, zoomLevel: .max, name: "hello", image: Image(systemName: "leaf.fill"))
-    SphereNodeView(state: .unlocked, zoomLevel: .normal, name: "hello", image: Image(systemName: "leaf.fill"))
-    SphereNodeView(state: .unlockable, zoomLevel: .min, name: "hello", image: Image(systemName: "leaf.fill"))
+    SphereNodeView(state: .locked, zoomLevel: .max, name: "hello", image: Image(systemName: "leaf.fill"), isSelected: true)
+    SphereNodeView(state: .unlocked, zoomLevel: .normal, name: "hello", image: Image(systemName: "leaf.fill"), isSelected: true)
+    SphereNodeView(state: .unlockable, zoomLevel: .min, name: "hello", image: Image(systemName: "leaf.fill"), isSelected: false)
 }

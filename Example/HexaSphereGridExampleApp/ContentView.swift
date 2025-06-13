@@ -15,7 +15,7 @@ struct ContentView: View {
     
     var body: some View {
         
-        HexaSphereGridView(viewModel: viewModel) { sphereNode in
+        HexaSphereGridView( viewModel: viewModel, showDebugCoordinates: true) { sphereNode in
             
             VStack {
                 
@@ -28,18 +28,21 @@ struct ContentView: View {
                     if viewModel.currentSelectedSphereNode?.id != sphereNode.id {
                         Button("Select") {
                             
+                            
+                            viewModel.deselectHighlightedNode()
                             viewModel.currentSelectedSphereNode = sphereNode
                             
-                            //let Value = sphereNode.metadataValue(forKey: "metadata_int", as: Int.self)
-                            //let Value = sphereNode.metadataValue(forKey: "metadata_string", as: String.self)
                         }
                     }
                     
                 case .unlockable:
                     Button("Unlock") {
-                        viewModel.unlockSphereNode(withID: sphereNode.id)
+                        
+                        viewModel.deselectHighlightedNode()
+                        viewModel.updateState(forNodeId: sphereNode.id, unlocked: true)
                     }
                 case .locked:
+                    
                     Text("Locked")
                 }
             }
@@ -52,8 +55,19 @@ struct ContentView: View {
             if let data = data {
                 
                 do {
-                    let root = try JSONDecoder().decode(SphereNodeData.self, from: data)
-                    viewModel.configure(with: root)
+                    let _nodes = try JSONDecoder().decode([MySphereNodeData].self, from: data)
+                    viewModel.configure(with: _nodes)
+                    
+                    for _ in 0..<10 {
+                        viewModel.updateState(forNodeId: _nodes.randomElement()?.id ?? "", unlocked: true)
+                    }
+                    
+                    viewModel.display(overlays: [
+                        (id: "4", view: AnyView(HexUserMarkerView(image: Image("icon_user_1")))),
+                        (id: "9", view: AnyView(HexUserMarkerView(image: Image("icon_user_2")))),
+                        (id: "12", view: AnyView(HexUserMarkerView(image: Image("icon_user_3"))))
+                    ])
+                    
                 } catch {
                     print(error)
                 }
@@ -65,6 +79,18 @@ struct ContentView: View {
             
         }
     }
+}
+
+struct MySphereNodeData: HexagonDataProtocol {
+    
+    var id: String
+    var name: String
+    
+    var q: Int
+    var r: Int
+    
+    var unlocked: Bool?
+    var progress : Double?
 }
 
 struct MyNodeStyleProvider: SphereNodeDataSource {
@@ -107,4 +133,18 @@ struct MyNodeStyleProvider: SphereNodeDataSource {
 
 #Preview {
     ContentView()
+}
+
+struct HexUserMarkerView: View {
+    let image: Image
+
+    var body: some View {
+        image
+            .resizable()
+            .scaledToFill()
+            .frame(width: 42, height: 42)
+            .clipShape(Circle())
+            .overlay(Circle().stroke(Color.white, lineWidth: 4))
+            .shadow(radius: 4)
+    }
 }

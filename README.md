@@ -10,14 +10,16 @@
 
 ## 🌟 Overview
 
-`HexaSphereGrid` is a highly customizable SwiftUI component that lets you build interactive evolution grids based on **hexagonal tiling** 🧩. Perfect for RPG skill trees, gamified progress maps, or just ✨cool UI experiments✨.
+`HexaSphereGrid` is a highly customizable SwiftUI component for building interactive hexagonal node maps 🧩. Inspired by Final Fantasy X's Sphere Grid, it’s ideal for RPG skill trees, gamified progress maps, or visually rich dashboards.
 
-🧙 Inspired by Final Fantasy X's Sphere Grid, it supports:
-- Interactive connected hexagonal nodes
-- Smooth pinch-to-zoom and dragging
-- Inertial scroll and tap interactions
-- Unlockable & selectable nodes
-- Customizable popovers for node content
+🧙 Features:
+- Interactive, coordinate-based hexagonal tiling
+- Smooth pinch-to-zoom and drag with inertial scroll
+- Unlockable, selectable, and highlightable nodes
+- Progress indicators (per node)
+- Custom image overlays anchored to node corners
+- Dynamic popovers for contextual node actions
+- Fully customizable visuals (color, image, etc.)
 
 <img src="Assets/sample_img.png" alt="HexaSphereGrid Preview" style="width:100%; border-radius:12px;" />
 
@@ -44,37 +46,46 @@ import HexaSphereGrid
 ## 🧪 Example Usage
 
 ```swift
-    @StateObject private var viewModel = HexaSphereGridModel()
+struct ContentView: View {
+    
+    @StateObject private var viewModel = HexaSphereGridViewModel(dataSource: MyNodeStyleProvider())
     
     var body: some View {
         
-        
-        HexaSphereGrid(viewModel: viewModel) { sphereNode in
+        HexaSphereGridView(viewModel: viewModel, showDebugCoordinates: true) { sphereNode in
             VStack {
-                
                 Text(sphereNode.name)
                     .padding()
                 
                 switch viewModel.sphereNodeState(forID: sphereNode.id) {
                 case .unlocked:
-                    
                     if viewModel.currentSelectedSphereNode?.id != sphereNode.id {
                         Button("Select") {
+                            viewModel.deselectHighlightedNode()
                             viewModel.currentSelectedSphereNode = sphereNode
                         }
                     }
-                    
                 case .unlockable:
                     Button("Unlock") {
-                        viewModel.unlockSphereNode(withID: sphereNode.id)
+                        viewModel.deselectHighlightedNode()
+                        viewModel.updateState(forNodeId: sphereNode.id, unlocked: true)
                     }
                 case .locked:
-                    EmptyView()
+                    Text("Locked")
                 }
             }
         }
+        
     }
+}
+
+
 ```
+
+This updated sample shows:
+- how to load JSON node data,
+- how to assign progress dynamically,
+- how to place custom image overlays anchored to nodes.
 
 ---
 

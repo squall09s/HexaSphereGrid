@@ -25,12 +25,16 @@ private let bounceFactor: CGFloat = 3.5
 
 public struct HexaSphereGridView<Popover: View>: View {
     
+    private let showDebugCoordinates: Bool
+    
     @ObservedObject var viewModel: HexaSphereGridViewModel
     private let popoverContent: ((SphereNode) -> Popover)?
+   
     
-    public init(viewModel: HexaSphereGridViewModel, popoverContent: ((SphereNode) -> Popover)? = nil) {
+    public init(viewModel: HexaSphereGridViewModel, showDebugCoordinates : Bool = false, popoverContent: ((SphereNode) -> Popover)? = nil) {
         self.viewModel = viewModel
         self.popoverContent = popoverContent
+        self.showDebugCoordinates = showDebugCoordinates
     }
     
     @State private var position = CGSize.zero
@@ -40,8 +44,7 @@ public struct HexaSphereGridView<Popover: View>: View {
     @State private var zoomScale: CGFloat = 0.75
     @State private var zoomLevel: ZoomLevel = .normal
     
-    @State private var highlightedSphereNodeID: String? = nil
-   
+    
     private let hexSize: CGFloat = 90
     /// Espace (positif pour plus d’écart, négatif pour rapprocher) entre les centres des hexagones
     private let hexSpacing: CGFloat = 0
@@ -60,12 +63,17 @@ public struct HexaSphereGridView<Popover: View>: View {
                 unlockPathsLayer(geometry: geometry, offset: offset)
                 hexagonViewsLayer(geometry: geometry, offset: offset)
                 
-                if let selectedID = highlightedSphereNodeID,
-                   let sphereNode = viewModel.sphereNodes.first(where: { $0.id == selectedID }),
-                   let content = popoverContent?(sphereNode) {
+                
+                ForEach(viewModel.nodeOverlays.sorted(by: { $0.key < $1.key }), id: \.key) { id, view in
+                  overlay(for: id, view: view, offset: offset)
+                }
+                
+                
+                if let _highlightedSphereNode = viewModel.highlightedSphereNode,
+                   let content = popoverContent?(_highlightedSphereNode) {
                     
-                    let size = hexSize * sphereNode.weight * 1.8
-                    let pos = hexToPixel(sphereNode.coord, size: hexSize)
+                    let size = hexSize * _highlightedSphereNode.weight * 1.8
+                    let pos = hexToPixel(_highlightedSphereNode.coordinate(), size: hexSize)
                 
                     VStack(spacing: 0) {
                         content
@@ -82,13 +90,13 @@ public struct HexaSphereGridView<Popover: View>: View {
                     .position(x: pos.x + offset.width,
                               y: pos.y + offset.height + size / 2 + 20)
                     .onTapGesture {
-                        highlightedSphereNodeID = nil
+                        viewModel.highlightedSphereNode = nil
                     }
                 }
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                highlightedSphereNodeID = nil
+                viewModel.highlightedSphereNode = nil
             }
             .scaleEffect(zoomScale * zoomScaleGesture)
             .animation(.easeInOut(duration: 0.2), value: zoomScale * zoomScaleGesture)
@@ -96,7 +104,7 @@ public struct HexaSphereGridView<Popover: View>: View {
             .gesture(
                 DragGesture()
                     .onChanged { value in
-                        highlightedSphereNodeID = nil
+                        viewModel.highlightedSphereNode = nil
                         let ez = zoomScale * zoomScaleGesture
                         dragOffset = CGSize(
                             width: value.translation.width / ez,
@@ -149,7 +157,7 @@ public struct HexaSphereGridView<Popover: View>: View {
                                     let closest = zoomPresets.min { abs($0.value - zoomScale) < abs($1.value - zoomScale) }!
                                     zoomScale = closest.value
                                     zoomLevel = closest.key
-                                    highlightedSphereNodeID = nil
+                                    viewModel.highlightedSphereNode = nil
                                 }
                             }
                     )
@@ -158,9 +166,25 @@ public struct HexaSphereGridView<Popover: View>: View {
     }
     
     @ViewBuilder
+    private func overlay(for id: String, view: AnyView, offset: CGSize) -> some View {
+        if let node = viewModel.sphereNodes.first(where: { $0.id == id }) {
+            let size = hexSize * node.weight * 1.8
+            let pos = hexToPixel(node.coordinate(), size: hexSize)
+
+            let overlaySize = size * 0.35
+            view
+                .frame(width: overlaySize, height: overlaySize)
+                .position(
+                    x: pos.x + offset.width - size * 0.43,
+                    y: pos.y + offset.height - size * 0.25
+                )
+        }
+    }
+    
+    @ViewBuilder
     private func unlockPathsLayer(geometry: GeometryProxy, offset: CGSize) -> some View {
         ForEach(viewModel.sphereNodes.filter { $0.unlocked }, id: \.id) { sphereNode in
-            ForEach(sphereNode.linkedNodeIDs, id: \.self) { childID in
+            ForEach(viewModel.neighborIDs(for: sphereNode), id: \.self) { childID in
                 UnlockPathLineView(parent: sphereNode, childID: childID, allNodes: viewModel.sphereNodes, offset: offset, hexSize: hexSize)
             }
         }
@@ -168,49 +192,46 @@ public struct HexaSphereGridView<Popover: View>: View {
     
     @ViewBuilder
     private func hexagonViewsLayer(geometry: GeometryProxy, offset: CGSize) -> some View {
-        ForEach(viewModel.sphereNodes) { sphereNode in
-            
-            Group {
-                
-                let size = hexSize * sphereNode.weight * 1.8
-                let pos = hexToPixel(sphereNode.coord, size: hexSize)
-                
-                SphereNodeView(state: viewModel.sphereNodeState(forID: sphereNode.id),
-                               zoomLevel: zoomLevel,
-                               name: sphereNode.name,
-                               image: viewModel.image(for: sphereNode),
-                               mainColor: viewModel.color(for: sphereNode)).frame(width: size, height: size)
-                    .position(x: pos.x + offset.width,
-                              y: pos.y + offset.height)
-                    .onTapGesture {
-                        guard zoomLevel != .min else { return }
-
-                        if highlightedSphereNodeID != sphereNode.id {
-                            highlightedSphereNodeID = sphereNode.id
-                        } else {
-                            highlightedSphereNodeID = nil
-                        }
-                    }
-                
-            }
+        
+        ForEach(viewModel.sphereNodes, id: \.id) { sphereNode in
+            hexCell(for: sphereNode, offset: offset)
         }
         
-        if let sphereNode = viewModel.currentSelectedSphereNode {
-            
-            let size = hexSize * sphereNode.weight * 1.8
-            let pos = hexToPixel(sphereNode.coord, size: hexSize)
+    }
+    
+    @ViewBuilder
+    private func hexCell(for sphereNode: SphereNode, offset: CGSize) -> some View {
+        let size = hexSize * sphereNode.weight * 1.8
+        let pos = hexToPixel(sphereNode.coordinate(), size: hexSize)
 
-            // Profile badge with smooth spring move and appearance
-            Image(systemName: "person.crop.circle.fill")
-                .resizable()
-                .frame(width: 40, height: 40)
-                .background(Color.white)
-                .clipShape(Circle())
-                .shadow(radius: 4)
-                .transition(.scale.combined(with: .opacity))
-                .animation(.interpolatingSpring(stiffness: 100, damping: 12), value: sphereNode.id)
-                .position(x: pos.x + offset.width - size * 0.4,
-                          y: pos.y + offset.height - size * 0.2)
+        ZStack {
+            SphereNodeView(state: viewModel.sphereNodeState(forID: sphereNode.id),
+                           zoomLevel: zoomLevel,
+                           name: sphereNode.name,
+                           image: viewModel.image(for: sphereNode),
+                           mainColor: viewModel.color(for: sphereNode),
+                           progress: sphereNode.progress,
+                           isSelected: viewModel.currentSelectedSphereNode?.id == sphereNode.id)
+                .frame(width: size, height: size)
+                .position(x: pos.x + offset.width,
+                          y: pos.y + offset.height)
+                .onTapGesture {
+                    guard zoomLevel != .min else { return }
+
+                    if viewModel.highlightedSphereNode?.id != sphereNode.id {
+                        viewModel.highlightedSphereNode = sphereNode
+                    } else {
+                        viewModel.highlightedSphereNode = nil
+                    }
+                }
+
+            if showDebugCoordinates {
+                Text("(\(sphereNode.q), \(sphereNode.r))")
+                    .font(.caption.bold())
+                    .foregroundColor(.red)
+                    .position(x: pos.x + offset.width,
+                              y: pos.y + offset.height + size / 2 + 10)
+            }
         }
     }
     
@@ -219,7 +240,7 @@ public struct HexaSphereGridView<Popover: View>: View {
     private func hexagonViewsBackgroundLayer(geometry: GeometryProxy, offset: CGSize) -> some View {
         ForEach(viewModel.sphereNodes) { sphereNode in
             let size = hexSize * sphereNode.weight * 1.8
-            let pos = hexToPixel(sphereNode.coord, size: hexSize)
+            let pos = hexToPixel(sphereNode.coordinate(), size: hexSize)
             HexagonViewBackground()
                 .frame(width: size, height: size)
                 .position(x: pos.x + offset.width,
@@ -239,6 +260,8 @@ public struct HexaSphereGridView<Popover: View>: View {
         let y = height * CGFloat(hex.r)
         return CGPoint(x: x, y: y)
     }
+    
+    
 }
 
 private struct UnlockPathLineView: View {
@@ -250,8 +273,8 @@ private struct UnlockPathLineView: View {
 
     var body: some View {
         if let child = allNodes.first(where: { $0.id == childID }), child.unlocked {
-            let parentPoint = hexToPixel(parent.coord, size: hexSize)
-            let childPoint = hexToPixel(child.coord, size: hexSize)
+            let parentPoint = hexToPixel(parent.coordinate(), size: hexSize)
+            let childPoint = hexToPixel(child.coordinate(), size: hexSize)
             Path { path in
                 path.move(to: CGPoint(x: parentPoint.x + offset.width,
                                       y: parentPoint.y + offset.height))
@@ -269,4 +292,122 @@ private struct UnlockPathLineView: View {
         let y = height * CGFloat(hex.r)
         return CGPoint(x: x, y: y)
     }
+}
+
+
+
+
+
+public final class HexaSphereGridViewModel: ObservableObject {
+    
+    @Published public var currentSelectedSphereNode: SphereNode?
+    @Published var highlightedSphereNode: SphereNode? = nil
+    
+    @Published public var sphereNodes: [SphereNode] = []
+    @Published var nodeOverlays: [String: AnyView] = [:]
+    
+  
+    public var dataSource: SphereNodeDataSource?
+    
+    private var imageCache: [String: Image] = [:]
+    
+    public init(dataSource: SphereNodeDataSource? = nil) {
+        self.dataSource = dataSource
+    }
+    
+    public func configure(with nodes : [HexagonDataProtocol]){
+        self.sphereNodes = nodes.map({ _nodeData in
+            return SphereNode(id: _nodeData.id,
+                              coord: GridCoord(q: _nodeData.q, r: _nodeData.r),
+                              name: _nodeData.name,
+                              weight: 1,
+                              progress: _nodeData.progress)
+        
+        })
+    }
+    
+    // Exemple d'utilisation dans ta vue ou logique
+    public func color(for node: SphereNode) -> Color {
+        dataSource?.color(for: node) ?? Color.black
+    }
+    
+    public func image(for node: SphereNode) -> Image? {
+        
+        if self.sphereNodeState(forID: node.id) == .locked {
+            
+            return Image(systemName: "seal.fill")
+            
+        }else{
+            
+            if let cached = imageCache[node.id] {
+                return cached
+            } else if let generated = dataSource?.image(for: node) {
+                imageCache[node.id] = generated
+                return generated
+            } else {
+                return nil
+            }
+        }
+    }
+    
+    public func sphereNodeState(forID id : String) -> HexagonState {
+        
+        guard let idx = sphereNodes.firstIndex(where: { $0.id == id }) else { return .locked }
+        
+        if sphereNodes[idx].unlocked {
+            
+            return .unlocked
+            
+        } else {
+            
+            /// Identifiants des cases déverrouillables (voisines des cases déjà unlockées)
+            var unlockableSphereNodeIDs: Set<String> {
+                var set = Set<String>()
+                for sphereNode in sphereNodes where sphereNode.unlocked {
+                    set.formUnion(neighborIDs(for: sphereNode))
+                }
+                // Ne pas proposer celles déjà déverrouillées
+                set.subtract(sphereNodes.filter { $0.unlocked }.map { $0.id })
+                return set
+            }
+            
+            if sphereNodes[idx].unlocked {
+                return .unlocked
+            } else {
+                return unlockableSphereNodeIDs.contains(id) ? .unlockable : .locked
+            }
+        }
+    }
+    
+    /// Tente de déverrouiller une case si elle est voisine d’une case unlockée
+    public func updateState(forNodeId id: String, unlocked : Bool) {
+        guard let idx = sphereNodes.firstIndex(where: { $0.id == id }) else { return }
+        sphereNodes[idx].unlocked = true
+    }
+    
+    public func neighborIDs(for node: SphereNode) -> [String] {
+        let directions = [
+            GridCoord(q: 1, r: 0), GridCoord(q: 1, r: -1), GridCoord(q: 0, r: -1),
+            GridCoord(q: -1, r: 0), GridCoord(q: -1, r: 1), GridCoord(q: 0, r: 1)
+        ]
+        
+        return directions.compactMap { offset in
+            let neighborCoord = GridCoord(q: node.q + offset.q, r: node.r + offset.r)
+            return sphereNodes.first(where: { $0.coordinate() == neighborCoord })?.id
+        }
+    }
+    
+    public func deselectHighlightedNode() {
+        highlightedSphereNode = nil
+    }
+    
+    public func display(overlays: [(id: String, view: AnyView)]) {
+        var newDict: [String: AnyView] = [:]
+        for overlay in overlays {
+            newDict[overlay.id] = overlay.view
+        }
+        self.nodeOverlays = newDict
+    }
+    
+    
 }

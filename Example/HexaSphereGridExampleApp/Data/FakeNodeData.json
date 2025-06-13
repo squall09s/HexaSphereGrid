@@ -1,153 +1,151 @@
-{
-  "name": "Catégories",
-  "id": "0",
-  "unlocked" : true,
-  "metadata" : { "metadata_int" : 1, "metadata_string" : "myTag" },
-  "children": [
-    {
-      "name": "Arts",
-      "orientation": "topLeft",
-      "id": "1",
-      "unlocked" : true,
-      "isCurrentNode" : true,
-      "children": [
-        {
-          "name": "Spectacles",
-          "orientation": "topLeft",
-          "id": "2",
-          "children": [
-            {
-              "name": "Galeries",
-              "orientation": "topLeft",
-              "id": "3",
-              "children": [
-                {
-                  "name": "Musique",
-                  "orientation": "topLeft",
-                  "id": "4",
-                  "children": [
-                    {
-                      "name": "Littérature",
-                      "orientation": "topRight",
-                      "id": "5",
-                      "children": []
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Sciences",
-      "orientation": "topRight",
-      "id": "6",
-      "children": [
-        {
-          "name": "Rencontres",
-          "orientation": "topLeft",
-          "id": "7",
-          "children": []
-        },
-        {
-          "name": "Observatoires",
-          "orientation": "topRight",
-              "id": "8",
-          "children": [
-            {
-              "name": "Makerspaces",
-              "orientation": "topRight",
-              "id": "9",
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Lifestyle",
-      "orientation": "right",
-      "id": "10",
-      "children": [
-        {
-          "name": "Gastronomie",
-          "orientation": "right",
-              "id": "11",
-          "children": [
-            {
-              "name": "Voyages",
-              "orientation": "topRight",
-              "id": "12",
-            },
-            {
-              "name": "Bien‑être",
-              "orientation": "right",
-              "id": "13",
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Sports",
-      "orientation": "bottomLeft",
-      "id": "14",
-      "children": [
-        {
-          "name": "Installations",
-          "orientation": "bottomLeft",
-          "id": "15",
-          "children": [
-            {
-              "name": "Nature",
-              "orientation": "bottomRight",
-              "id": "16",
-            },
-            {
-              "name": "Terrains",
-              "orientation": "bottomLeft",
-              "id": "17",
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Sorties & Vie Nocturne",
-      "orientation": "left",
-      "id": "18",
-      "children": [
-        {
-          "name": "Bars & Pubs",
-          "orientation": "left",
-          "id": "19",
-          "children": [
-            {
-              "name": "Discothèques",
-              "orientation": "bottomLeft",
-              "id": "20",
-            },
-            {
-              "name": "Restaurants festifs",
-              "orientation": "left",
-              "id": "21",
-                  "children": [
-                {
-                  "name": "Soirées & Événements",
-                  "orientation": "bottomLeft",
-                  "id": "22",
-                },
-                {
-                  "name": "Cafés & Salons",
-                  "orientation": "left",
-                  "id": "23",
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
+[
+  {
+    "name": "Catégories",
+    "id": "0",
+    "progress": 0.55,
+    "q": 0,
+    "r": 0
+  },
+  {
+    "name": "Arts",
+    "id": "1",
+    "q": 1,
+    "r": 0
+  },
+  {
+    "name": "Spectacles",
+    "id": "2",
+    "q": 2,
+    "r": 0
+  },
+  {
+    "name": "Galeries",
+    "id": "3",
+    "q": 3,
+    "progress": 0.80,
+    "r": 0
+  },
+  {
+    "name": "Musique",
+    "id": "4",
+    "progress": 0.60,
+    "q": 4,
+    "r": 0
+  },
+  {
+    "name": "Littérature",
+    "id": "5",
+    "q": 5,
+    "progress": 0.20,
+    "r": 0
+  },
+  {
+    "name": "Sciences",
+    "id": "6",
+    "q": 0,
+    "r": 1
+  },
+  {
+    "name": "Observatoires",
+    "id": "8",
+    "q": -1,
+    "r": 2
+  },
+  {
+    "name": "Makerspaces",
+    "id": "9",
+    "q": -2,
+    "r": 3
+  },
+  {
+    "name": "Lifestyle",
+    "id": "10",
+    "progress": 0.0,
+    "q": -1,
+    "r": 0
+  },
+  {
+    "name": "Gastronomie",
+    "id": "11",
+    "q": -2,
+    "r": 0
+  },
+  {
+    "name": "Voyages",
+    "id": "12",
+    "progress": 0.60,
+    "q": -3,
+    "r": 0
+  },
+  {
+    "name": "Bien‑être",
+    "id": "13",
+    "q": -2,
+    "r": -1
+  },
+  {
+    "name": "Sports",
+    "id": "14",
+    "progress": 1.0,
+    "q": 0,
+    "r": -1
+  },
+  {
+    "name": "Installations",
+    "id": "15",
+    "q": 0,
+    "r": -2
+  },
+  {
+    "name": "Nature",
+    "id": "16",
+    "q": 1,
+    "r": -3
+  },
+  {
+    "name": "Terrains",
+    "id": "17",
+    "progress": 0.77,
+    "q": -1,
+    "r": -3
+  },
+  {
+    "name": "Sorties & Vie Nocturne",
+    "id": "18",
+    "progress": 0.60,
+    "q": 1,
+    "r": 1
+  },
+  {
+    "name": "Bars & Pubs",
+    "id": "19",
+    "q": 2,
+    "r": 1
+  },
+  {
+    "name": "Discothèques",
+    "id": "20",
+    "q": 3,
+    "r": 1
+  },
+  {
+    "name": "Restaurants festifs",
+    "id": "21",
+    "progress": 0.2,
+    "q": 2,
+    "r": 2
+  },
+  {
+    "name": "Soirées & Événements",
+    "id": "22",
+    "progress": 0.33,
+    "q": 3,
+    "r": 3
+  },
+  {
+    "name": "Cafés & Salons",
+    "id": "23",
+    "q": 1,
+    "r": 3
+  }
+]
