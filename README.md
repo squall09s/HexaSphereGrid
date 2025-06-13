@@ -20,6 +20,7 @@
 - Custom image overlays anchored to node corners
 - Dynamic popovers for contextual node actions
 - Fully customizable visuals (color, image, etc.)
+- Built-in minimap with dynamic viewport indicator 🗺️
 
 <img src="Assets/sample_img.png" alt="HexaSphereGrid Preview" style="width:100%; border-radius:12px;" />
 
@@ -85,7 +86,8 @@ struct ContentView: View {
 This updated sample shows:
 - how to load JSON node data,
 - how to assign progress dynamically,
-- how to place custom image overlays anchored to nodes.
+- how to place custom image overlays anchored to nodes,
+- how to visualize current viewport on a built-in minimap.
 
 ---
 

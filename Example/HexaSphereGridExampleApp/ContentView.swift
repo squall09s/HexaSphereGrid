@@ -64,7 +64,6 @@ struct ContentView: View {
                         }
                     }
                     
-                    
                     viewModel.display(overlays: [
                         (id: _nodes[0].id, view: AnyView(HexUserMarkerView(image: Image("icon_user_1")))),
                         (id: _nodes[1].id, view: AnyView(HexUserMarkerView(image: Image("icon_user_2")))),

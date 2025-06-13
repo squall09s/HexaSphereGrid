@@ -18,6 +18,8 @@ public protocol SphereNodeDataSource {
 
 public final class HexaSphereGridViewModel: ObservableObject {
     
+    @Published public var currentCenter: GridCoord = GridCoord(q: 0, r: 0 )
+    
     @Published public var currentSelectedSphereNode: SphereNode?
     @Published var highlightedSphereNode: SphereNode? = nil
     
@@ -33,7 +35,7 @@ public final class HexaSphereGridViewModel: ObservableObject {
         self.dataSource = dataSource
     }
     
-    public func configure(with nodes : [HexagonDataProtocol]){
+    public func configure(with nodes : [any HexagonDataProtocol]){
         self.sphereNodes = nodes.map({ _nodeData in
             return SphereNode(id: _nodeData.id,
                               coord: GridCoord(q: _nodeData.q, r: _nodeData.r),

@@ -25,30 +25,33 @@ private let bounceFactor: CGFloat = 3.5
 
 public struct HexaSphereGridView<Popover: View>: View {
     
-    private let showDebugCoordinates: Bool
+    let showDebugCoordinates: Bool
+    let showMiniMap: Bool
     
     @ObservedObject var viewModel: HexaSphereGridViewModel
     private let popoverContent: ((SphereNode) -> Popover)?
    
+  
     
-    public init(viewModel: HexaSphereGridViewModel, showDebugCoordinates : Bool = false, popoverContent: ((SphereNode) -> Popover)? = nil) {
+    public init(viewModel: HexaSphereGridViewModel, showDebugCoordinates : Bool = false, showMiniMap: Bool = true, popoverContent: ((SphereNode) -> Popover)? = nil) {
         self.viewModel = viewModel
         self.popoverContent = popoverContent
         self.showDebugCoordinates = showDebugCoordinates
+        self.showMiniMap = showMiniMap
     }
     
-    @State private var position = CGSize.zero
-    @State private var dragOffset = CGSize.zero
+    @State var position = CGSize.zero
+    @State var dragOffset = CGSize.zero
     
-    @GestureState private var zoomScaleGesture: CGFloat = 1.0
-    @State private var zoomScale: CGFloat = 0.75
-    @State private var zoomLevel: ZoomLevel = .normal
+    @GestureState var zoomScaleGesture: CGFloat = 1.0
+    @State var zoomScale: CGFloat = 0.75
+    @State var zoomLevel: ZoomLevel = .normal
     
     
-    private let hexSize: CGFloat = 90
+    let hexSize: CGFloat = 90
     /// Espace (positif pour plus d’écart, négatif pour rapprocher) entre les centres des hexagones
     private let hexSpacing: CGFloat = 0
-    private let mapRadius = 10 // rayon en hexagones autour du centre
+    let mapRadius = 10 // rayon en hexagones autour du centre
     
     
     public var body: some View {
@@ -141,6 +144,12 @@ public struct HexaSphereGridView<Popover: View>: View {
                                 position.height = 0
                             }
                         }
+                        
+                        let _hexWidth = hexSize * sqrt(3)
+                        let _hexHeight = hexSize * 3 / 2
+                        let q = Int(round(position.width / _hexWidth - (position.height / _hexHeight) / 2))
+                        let r = Int(round(position.height / _hexHeight))
+                        viewModel.currentCenter = GridCoord(q: q, r: r)
                     }
                     .simultaneously(with:
                         MagnificationGesture()
@@ -161,7 +170,17 @@ public struct HexaSphereGridView<Popover: View>: View {
                                 }
                             }
                     )
+            ).overlay(
+                Group {
+                    if showMiniMap {
+                        miniMapView()
+                            .frame(width: 100, height: 100)
+                            .padding()
+                    }
+                },
+                alignment: .topTrailing
             )
+            
         }.clipped()
     }
     
@@ -180,119 +199,6 @@ public struct HexaSphereGridView<Popover: View>: View {
                 )
         }
     }
-    
-    @ViewBuilder
-    private func unlockPathsLayer(geometry: GeometryProxy, offset: CGSize) -> some View {
-        ForEach(viewModel.sphereNodes.filter { $0.unlocked }, id: \.id) { sphereNode in
-            ForEach(viewModel.neighborIDs(for: sphereNode), id: \.self) { childID in
-                UnlockPathLineView(parent: sphereNode, childID: childID, allNodes: viewModel.sphereNodes, offset: offset, hexSize: hexSize)
-            }
-        }
-    }
-    
-    @ViewBuilder
-    private func hexagonViewsLayer(geometry: GeometryProxy, offset: CGSize) -> some View {
-        
-        ForEach(viewModel.sphereNodes, id: \.id) { sphereNode in
-            hexCell(for: sphereNode, offset: offset)
-        }
-        
-    }
-    
-    @ViewBuilder
-    private func hexCell(for sphereNode: SphereNode, offset: CGSize) -> some View {
-        let size = hexSize * sphereNode.weight * 1.8
-        let pos = hexToPixel(sphereNode.coordinate(), size: hexSize)
-
-        ZStack {
-            SphereNodeView(state: viewModel.sphereNodeState(forID: sphereNode.id),
-                           zoomLevel: zoomLevel,
-                           name: sphereNode.name,
-                           image: viewModel.image(for: sphereNode),
-                           mainColor: viewModel.color(for: sphereNode),
-                           progress: sphereNode.progress,
-                           isSelected: viewModel.currentSelectedSphereNode?.id == sphereNode.id)
-                .frame(width: size, height: size)
-                .position(x: pos.x + offset.width,
-                          y: pos.y + offset.height)
-                .onTapGesture {
-                    guard zoomLevel != .min else { return }
-
-                    if viewModel.highlightedSphereNode?.id != sphereNode.id {
-                        viewModel.highlightedSphereNode = sphereNode
-                    } else {
-                        viewModel.highlightedSphereNode = nil
-                    }
-                }
-
-            if showDebugCoordinates {
-                Text("(\(sphereNode.q), \(sphereNode.r))")
-                    .font(.caption.bold())
-                    .foregroundColor(.red)
-                    .position(x: pos.x + offset.width,
-                              y: pos.y + offset.height + size / 2 + 10)
-            }
-        }
-    }
-    
-    
-    @ViewBuilder
-    private func hexagonViewsBackgroundLayer(geometry: GeometryProxy, offset: CGSize) -> some View {
-        ForEach(viewModel.sphereNodes) { sphereNode in
-            let size = hexSize * sphereNode.weight * 1.8
-            let pos = hexToPixel(sphereNode.coordinate(), size: hexSize)
-            HexagonViewBackground()
-                .frame(width: size, height: size)
-                .position(x: pos.x + offset.width,
-                          y: pos.y + offset.height)
-                
-        }
-    }
-    
-   
-    
-    // MARK: - Coordinate & Layout
-    private func hexToPixel(_ hex: GridCoord, size: CGFloat) -> CGPoint {
-        // Calculate center-to-center spacing including custom spacing
-        let width = size * sqrt(3) + hexSpacing
-        let height = size * 3/2 + hexSpacing
-        let x = width * (CGFloat(hex.q) + CGFloat(hex.r) / 2)
-        let y = height * CGFloat(hex.r)
-        return CGPoint(x: x, y: y)
-    }
-    
+  
     
 }
-
-private struct UnlockPathLineView: View {
-    let parent: SphereNode
-    let childID: UUID
-    let allNodes: [SphereNode]
-    let offset: CGSize
-    let hexSize: CGFloat
-
-    var body: some View {
-        if let child = allNodes.first(where: { $0.id == childID }), child.unlocked {
-            let parentPoint = hexToPixel(parent.coordinate(), size: hexSize)
-            let childPoint = hexToPixel(child.coordinate(), size: hexSize)
-            Path { path in
-                path.move(to: CGPoint(x: parentPoint.x + offset.width,
-                                      y: parentPoint.y + offset.height))
-                path.addLine(to: CGPoint(x: childPoint.x + offset.width,
-                                         y: childPoint.y + offset.height))
-            }
-            .stroke(Color.white, lineWidth: 15)
-        }
-    }
-
-    private func hexToPixel(_ hex: GridCoord, size: CGFloat) -> CGPoint {
-        let width = size * sqrt(3)
-        let height = size * 3/2
-        let x = width * (CGFloat(hex.q) + CGFloat(hex.r) / 2)
-        let y = height * CGFloat(hex.r)
-        return CGPoint(x: x, y: y)
-    }
-}
-
-
-

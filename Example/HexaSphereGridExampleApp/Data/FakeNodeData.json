@@ -1,151 +1,212 @@
 [
   {
-    "name": "Catégories",
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "progress": 0.55,
-    "q": 0,
-    "r": 0
-  },
-  {
-    "name": "Arts",
-    "id": "550e8400-e29b-41d4-a716-446655440001",
-    "q": 1,
-    "r": 0
-  },
-  {
-    "name": "Spectacles",
-    "id": "550e8400-e29b-41d4-a716-446655440002",
-    "q": 2,
-    "r": 0
-  },
-  {
-    "name": "Galeries",
-    "id": "550e8400-e29b-41d4-a716-446655440003",
-    "q": 3,
-    "progress": 0.80,
-    "r": 0
-  },
-  {
-    "name": "Musique",
-    "id": "550e8400-e29b-41d4-a716-446655440004",
-    "progress": 0.60,
-    "q": 4,
-    "r": 0
-  },
-  {
-    "name": "Littérature",
-    "id": "550e8400-e29b-41d4-a716-446655440005",
-    "q": 5,
-    "progress": 0.20,
-    "r": 0
-  },
-  {
-    "name": "Sciences",
-    "id": "550e8400-e29b-41d4-a716-446655440006",
+    "name": "Greenlife",
+    "id": "d88b5fce-3670-4618-b8f3-ed7fd8a76ef4",
     "q": 0,
     "r": 1
   },
   {
-    "name": "Observatoires",
-    "id": "550e8400-e29b-41d4-a716-446655440008",
+    "name": "Gamezone",
+    "id": "ecb09b78-67be-420f-b511-505ed5f2683f",
     "q": -1,
-    "r": 2
+    "r": 1
   },
   {
-    "name": "Makerspaces",
-    "id": "550e8400-e29b-41d4-a716-446655440009",
-    "q": -2,
-    "r": 3
-  },
-  {
-    "name": "Lifestyle",
-    "id": "550e8400-e29b-41d4-a716-446655440010",
-    "progress": 0.0,
-    "q": -1,
-    "r": 0
-  },
-  {
-    "name": "Gastronomie",
-    "id": "550e8400-e29b-41d4-a716-446655440011",
-    "q": -2,
-    "r": 0
-  },
-  {
-    "name": "Voyages",
-    "id": "550e8400-e29b-41d4-a716-446655440012",
-    "progress": 0.60,
-    "q": -3,
-    "r": 0
-  },
-  {
-    "name": "Bien‑être",
-    "id": "550e8400-e29b-41d4-a716-446655440013",
-    "q": -2,
+    "name": "MythoBar",
+    "id": "dd5596f1-2459-4f45-b20c-b7cb81ddc0e4",
+    "q": 5,
     "r": -1
   },
   {
-    "name": "Sports",
-    "id": "550e8400-e29b-41d4-a716-446655440014",
-    "progress": 1.0,
+    "name": "PillowTalk",
+    "id": "3bd28d04-5a34-4d3c-8ed4-1410d206dd3a",
+    "q": -5,
+    "r": 1
+  },
+  {
+    "name": "PixelCafé",
+    "id": "d6909d96-86cd-4c88-9f6f-dbcbe2c9651b",
+    "q": 3,
+    "r": 4
+  },
+  {
+    "name": "Afterwork",
+    "id": "6de5a79b-2728-4b18-b151-b12548843c96",
+    "q": 1,
+    "r": 0
+  },
+  {
+    "name": "GlowFest",
+    "id": "ff11e644-1aeb-47cc-bfa3-df35805543ed",
+    "q": -4,
+    "r": -3
+  },
+  {
+    "name": "DarkRoom",
+    "id": "c8465143-d74a-4584-80ff-73b0add5123e",
+    "q": 4,
+    "r": -4
+  },
+  {
+    "name": "Skyline",
+    "id": "ff04b414-ef12-49eb-a549-db7823a28253",
+    "q": 6,
+    "r": 2
+  },
+  {
+    "name": "MeowClub",
+    "id": "91a0bd26-28e0-4d7f-a382-a5c1929bad0f",
+    "q": -6,
+    "r": 0
+  },
+  {
+    "name": "Openmic",
+    "id": "e0bde61d-da2d-4fb3-b5d2-517d5c8ced05",
+    "q": -1,
+    "r": 0
+  },
+  {
+    "name": "Philochat",
+    "id": "bcedd2e3-8bb8-4c58-b4dc-f3ba528d2e3b",
+    "q": -1,
+    "r": -1
+  },
+  {
+    "name": "Karaokiss",
+    "id": "0e9d7cbb-dcf2-48cb-b7f6-2e115d4a1859",
     "q": 0,
     "r": -1
   },
   {
-    "name": "Installations",
-    "id": "550e8400-e29b-41d4-a716-446655440015",
+    "name": "AstroFlirt",
+    "id": "fd491e74-bab3-4069-9ac4-361d09b97b4e",
+    "q": 3,
+    "r": -5
+  },
+  {
+    "name": "BiblioCrush",
+    "id": "ab5eeabf-ed77-450a-8c10-949df1365baf",
+    "q": -5,
+    "r": 3
+  },
+  {
+    "name": "Movezone",
+    "id": "07d7b0bd-d349-4d89-82da-cc5037cdc7fe",
+    "q": 2,
+    "r": 0
+  },
+  {
+    "name": "Culturespot",
+    "id": "81a519af-ccf2-463e-b595-fe0658909014",
+    "q": 2,
+    "r": -1
+  },
+  {
+    "name": "Tender",
+    "id": "9153b90e-53ac-49ee-a8c8-8d74ef542112",
+    "q": -2,
+    "r": 0
+  },
+  {
+    "name": "Festivalia",
+    "id": "d296854a-6037-460f-a4e8-0705c40b07a1",
+    "q": 1,
+    "r": 1
+  },
+  {
+    "name": "Foodlab",
+    "id": "9877c6b4-0aea-401a-81d3-1962f6a909e2",
+    "q": -2,
+    "r": 1
+  },
+  {
+    "name": "Zodia",
+    "id": "d75d912a-bbe3-424e-98f0-b6d1b0302713",
     "q": 0,
     "r": -2
   },
   {
-    "name": "Nature",
-    "id": "550e8400-e29b-41d4-a716-446655440016",
+    "name": "Electroclub",
+    "id": "48779294-6748-4b8e-aa4d-c1bf966c270e",
     "q": 1,
-    "r": -3
+    "r": -1
   },
   {
-    "name": "Terrains",
-    "id": "550e8400-e29b-41d4-a716-446655440017",
-    "progress": 0.77,
-    "q": -1,
-    "r": -3
+    "name": "Chill",
+    "id": "9495293f-5a7c-40a6-b6f0-b2dae8bc784f",
+    "q": 0,
+    "r": 0
   },
   {
-    "name": "Sorties & Vie Nocturne",
-    "id": "550e8400-e29b-41d4-a716-446655440018",
-    "progress": 0.60,
-    "q": 1,
-    "r": 1
-  },
-  {
-    "name": "Bars & Pubs",
-    "id": "550e8400-e29b-41d4-a716-446655440019",
-    "q": 2,
-    "r": 1
-  },
-  {
-    "name": "Discothèques",
-    "id": "550e8400-e29b-41d4-a716-446655440020",
-    "q": 3,
-    "r": 1
-  },
-  {
-    "name": "Restaurants festifs",
-    "id": "550e8400-e29b-41d4-a716-446655440021",
-    "progress": 0.2,
-    "q": 2,
+    "name": "Techlab",
+    "id": "c8c7b96d-b1d2-4497-9c0e-1aac16829fe0",
+    "q": 0,
     "r": 2
   },
   {
-    "name": "Soirées & Événements",
-    "id": "550e8400-e29b-41d4-a716-446655440022",
-    "progress": 0.33,
-    "q": 3,
+    "name": "Plantopia",
+    "id": "7f0392f0-8e35-483a-b7e4-77a9a05a8168",
+    "q": 6,
+    "r": -3
+  },
+  {
+    "name": "JazzCove",
+    "id": "8035732b-04cd-450b-8ad9-2429a7278d8c",
+    "q": -6,
+    "r": -2
+  },
+  {
+    "name": "BoardGameBay",
+    "id": "e53a0993-4f30-4ef3-a4ae-2243b6a25816",
+    "q": 4,
     "r": 3
   },
   {
-    "name": "Cafés & Salons",
-    "id": "550e8400-e29b-41d4-a716-446655440023",
-    "q": 1,
-    "r": 3
+    "name": "RooftopLove",
+    "id": "7d4678de-65b8-4a09-be52-88c8867ee0d4",
+    "q": -4,
+    "r": 5
+  },
+  {
+    "name": "KinkPad",
+    "id": "fcb37d74-7234-42da-9f5e-28215f7e42ac",
+    "q": 7,
+    "r": 0
+  },
+  {
+    "name": "CryptoCrush",
+    "id": "b60811c4-ae6f-4132-bc74-5fc65fdee323",
+    "q": -7,
+    "r": -1
+  },
+  {
+    "name": "PoetryNook",
+    "id": "c6641eeb-478d-43c8-b1da-6c72e370d694",
+    "q": 2,
+    "r": 6
+  },
+  {
+    "name": "BubblePop",
+    "id": "676a8c1c-4ccf-424b-8475-f4e4ba2dae5e",
+    "q": -3,
+    "r": -6
+  },
+  {
+    "name": "VinylVibe",
+    "id": "46466390-5fb8-4977-b754-c125ae94b4db",
+    "q": 5,
+    "r": 5
+  },
+  {
+    "name": "TattooDen",
+    "id": "8f67895f-53d6-4eb6-9ed6-5e75747462ec",
+    "q": -2,
+    "r": -5
+  },
+  {
+    "name": "FantasyInn",
+    "id": "d3b7e2b1-e5b1-4328-8383-79b45ef61ced",
+    "q": 7,
+    "r": -2
   }
 ]
