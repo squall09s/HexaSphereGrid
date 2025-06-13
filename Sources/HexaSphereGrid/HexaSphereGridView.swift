@@ -64,7 +64,7 @@ public struct HexaSphereGridView<Popover: View>: View {
                 hexagonViewsLayer(geometry: geometry, offset: offset)
                 
                 
-                ForEach(viewModel.nodeOverlays.sorted(by: { $0.key < $1.key }), id: \.key) { id, view in
+                ForEach(viewModel.nodeOverlays.sorted(by: { $0.key.uuidString < $1.key.uuidString }), id: \.key) { id, view in
                   overlay(for: id, view: view, offset: offset)
                 }
                 
@@ -166,7 +166,7 @@ public struct HexaSphereGridView<Popover: View>: View {
     }
     
     @ViewBuilder
-    private func overlay(for id: String, view: AnyView, offset: CGSize) -> some View {
+    private func overlay(for id: UUID, view: AnyView, offset: CGSize) -> some View {
         if let node = viewModel.sphereNodes.first(where: { $0.id == id }) {
             let size = hexSize * node.weight * 1.8
             let pos = hexToPixel(node.coordinate(), size: hexSize)
@@ -175,8 +175,8 @@ public struct HexaSphereGridView<Popover: View>: View {
             view
                 .frame(width: overlaySize, height: overlaySize)
                 .position(
-                    x: pos.x + offset.width - size * 0.43,
-                    y: pos.y + offset.height - size * 0.25
+                    x: pos.x + offset.width - size * 0.38,
+                    y: pos.y + offset.height - size * 0.22
                 )
         }
     }
@@ -266,7 +266,7 @@ public struct HexaSphereGridView<Popover: View>: View {
 
 private struct UnlockPathLineView: View {
     let parent: SphereNode
-    let childID: String
+    let childID: UUID
     let allNodes: [SphereNode]
     let offset: CGSize
     let hexSize: CGFloat
@@ -296,118 +296,3 @@ private struct UnlockPathLineView: View {
 
 
 
-
-
-public final class HexaSphereGridViewModel: ObservableObject {
-    
-    @Published public var currentSelectedSphereNode: SphereNode?
-    @Published var highlightedSphereNode: SphereNode? = nil
-    
-    @Published public var sphereNodes: [SphereNode] = []
-    @Published var nodeOverlays: [String: AnyView] = [:]
-    
-  
-    public var dataSource: SphereNodeDataSource?
-    
-    private var imageCache: [String: Image] = [:]
-    
-    public init(dataSource: SphereNodeDataSource? = nil) {
-        self.dataSource = dataSource
-    }
-    
-    public func configure(with nodes : [HexagonDataProtocol]){
-        self.sphereNodes = nodes.map({ _nodeData in
-            return SphereNode(id: _nodeData.id,
-                              coord: GridCoord(q: _nodeData.q, r: _nodeData.r),
-                              name: _nodeData.name,
-                              weight: 1,
-                              progress: _nodeData.progress)
-        
-        })
-    }
-    
-    // Exemple d'utilisation dans ta vue ou logique
-    public func color(for node: SphereNode) -> Color {
-        dataSource?.color(for: node) ?? Color.black
-    }
-    
-    public func image(for node: SphereNode) -> Image? {
-        
-        if self.sphereNodeState(forID: node.id) == .locked {
-            
-            return Image(systemName: "seal.fill")
-            
-        }else{
-            
-            if let cached = imageCache[node.id] {
-                return cached
-            } else if let generated = dataSource?.image(for: node) {
-                imageCache[node.id] = generated
-                return generated
-            } else {
-                return nil
-            }
-        }
-    }
-    
-    public func sphereNodeState(forID id : String) -> HexagonState {
-        
-        guard let idx = sphereNodes.firstIndex(where: { $0.id == id }) else { return .locked }
-        
-        if sphereNodes[idx].unlocked {
-            
-            return .unlocked
-            
-        } else {
-            
-            /// Identifiants des cases déverrouillables (voisines des cases déjà unlockées)
-            var unlockableSphereNodeIDs: Set<String> {
-                var set = Set<String>()
-                for sphereNode in sphereNodes where sphereNode.unlocked {
-                    set.formUnion(neighborIDs(for: sphereNode))
-                }
-                // Ne pas proposer celles déjà déverrouillées
-                set.subtract(sphereNodes.filter { $0.unlocked }.map { $0.id })
-                return set
-            }
-            
-            if sphereNodes[idx].unlocked {
-                return .unlocked
-            } else {
-                return unlockableSphereNodeIDs.contains(id) ? .unlockable : .locked
-            }
-        }
-    }
-    
-    /// Tente de déverrouiller une case si elle est voisine d’une case unlockée
-    public func updateState(forNodeId id: String, unlocked : Bool) {
-        guard let idx = sphereNodes.firstIndex(where: { $0.id == id }) else { return }
-        sphereNodes[idx].unlocked = true
-    }
-    
-    public func neighborIDs(for node: SphereNode) -> [String] {
-        let directions = [
-            GridCoord(q: 1, r: 0), GridCoord(q: 1, r: -1), GridCoord(q: 0, r: -1),
-            GridCoord(q: -1, r: 0), GridCoord(q: -1, r: 1), GridCoord(q: 0, r: 1)
-        ]
-        
-        return directions.compactMap { offset in
-            let neighborCoord = GridCoord(q: node.q + offset.q, r: node.r + offset.r)
-            return sphereNodes.first(where: { $0.coordinate() == neighborCoord })?.id
-        }
-    }
-    
-    public func deselectHighlightedNode() {
-        highlightedSphereNode = nil
-    }
-    
-    public func display(overlays: [(id: String, view: AnyView)]) {
-        var newDict: [String: AnyView] = [:]
-        for overlay in overlays {
-            newDict[overlay.id] = overlay.view
-        }
-        self.nodeOverlays = newDict
-    }
-    
-    
-}

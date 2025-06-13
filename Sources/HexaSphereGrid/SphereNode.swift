@@ -20,7 +20,7 @@ public struct GridCoord: Hashable, Codable {
 public struct SphereNode: HexagonDataProtocol {
     
     
-    public init(id : String, coord: GridCoord, name: String, weight: CGFloat, unlocked: Bool = false, progress: Double? = nil) {
+    public init(id : UUID, coord: GridCoord, name: String, weight: CGFloat, unlocked: Bool = false, progress: Double? = nil) {
         self.id = id
         self.q = coord.q
         self.r = coord.r
@@ -30,7 +30,7 @@ public struct SphereNode: HexagonDataProtocol {
         self.progress = progress
     }
     
-    public var id : String
+    public var id : UUID
     
     public let name: String
     public var weight: CGFloat
@@ -55,7 +55,7 @@ public struct SphereNode: HexagonDataProtocol {
 
 public protocol HexagonDataProtocol: Identifiable, Codable, Hashable {
     
-    var id: String { get }
+    var id: UUID { get }
     var name: String { get }
     
     var q: Int { get }

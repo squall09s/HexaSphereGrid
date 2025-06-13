@@ -59,13 +59,16 @@ struct ContentView: View {
                     viewModel.configure(with: _nodes)
                     
                     for _ in 0..<10 {
-                        viewModel.updateState(forNodeId: _nodes.randomElement()?.id ?? "", unlocked: true)
+                        if let randomNodeId = _nodes.randomElement()?.id{
+                            viewModel.updateState(forNodeId: randomNodeId, unlocked: true)
+                        }
                     }
                     
+                    
                     viewModel.display(overlays: [
-                        (id: "4", view: AnyView(HexUserMarkerView(image: Image("icon_user_1")))),
-                        (id: "9", view: AnyView(HexUserMarkerView(image: Image("icon_user_2")))),
-                        (id: "12", view: AnyView(HexUserMarkerView(image: Image("icon_user_3"))))
+                        (id: _nodes[0].id, view: AnyView(HexUserMarkerView(image: Image("icon_user_1")))),
+                        (id: _nodes[1].id, view: AnyView(HexUserMarkerView(image: Image("icon_user_2")))),
+                        (id: _nodes[2].id, view: AnyView(HexUserMarkerView(image: Image("icon_user_3"))))
                     ])
                     
                 } catch {
@@ -83,7 +86,7 @@ struct ContentView: View {
 
 struct MySphereNodeData: HexagonDataProtocol {
     
-    var id: String
+    var id: UUID
     var name: String
     
     var q: Int
