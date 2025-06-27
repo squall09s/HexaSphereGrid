@@ -88,8 +88,8 @@ public struct HexaSphereGridView<Popover: View>: View {
                     
                     VStack(spacing: 0) {
                         content
-                            .frame(width: geometry.size.width * 0.8,
-                                   height: geometry.size.width * 0.8 * 0.75)
+                            .frame(width: geometry.size.width * 1,
+                                   height: geometry.size.width * 1 * 0.8)
                             .background(
                                 CustomPopoverContainer()
                                     .fill(Color.white)
@@ -100,7 +100,7 @@ public struct HexaSphereGridView<Popover: View>: View {
                     .transition(.scale.combined(with: .opacity))
                     .position(
                         x: geometry.size.width / 2,
-                        y: geometry.size.height / 2 + ((geometry.size.width * 0.8 * 0.75 / 2) - 50) * popoverScale(for: self.zoomLevel)
+                        y: geometry.size.height / 2 + ((geometry.size.width * 1 * 0.8 / 2) - 50) * popoverScale(for: self.zoomLevel)
                     )
                     .onTapGesture {
                         viewModel.highlightedSphereNode = nil
