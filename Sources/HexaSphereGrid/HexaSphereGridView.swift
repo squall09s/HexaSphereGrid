@@ -31,8 +31,8 @@ public struct HexaSphereGridView<Popover: View>: View {
     @ObservedObject var viewModel: HexaSphereGridViewModel
     private let popoverContent: ((SphereNode) -> Popover)?
    
+    @State private var showUnlockPaths: Bool = true
   
-    
     public init(viewModel: HexaSphereGridViewModel, showDebugCoordinates : Bool = false, showMiniMap: Bool = true, popoverContent: ((SphereNode) -> Popover)? = nil) {
         self.viewModel = viewModel
         self.popoverContent = popoverContent
@@ -54,6 +54,14 @@ public struct HexaSphereGridView<Popover: View>: View {
     let mapRadius = 10 // rayon en hexagones autour du centre
     
     
+    private func popoverScale(for zoom: ZoomLevel) -> CGFloat {
+        switch zoom {
+        case .min: return 1.2
+        case .normal: return 1.2
+        case .max: return 0.6
+        }
+    }
+    
     public var body: some View {
         GeometryReader { geometry in
             // Precompute common values to simplify body expressions
@@ -62,8 +70,11 @@ public struct HexaSphereGridView<Popover: View>: View {
                 height: position.height + dragOffset.height + geometry.size.height / 2
             )
             ZStack {
+                
                 hexagonViewsBackgroundLayer(geometry: geometry, offset: offset)
-                unlockPathsLayer(geometry: geometry, offset: offset)
+                if showUnlockPaths {
+                    unlockPathsLayer(geometry: geometry, offset: offset)
+                }
                 hexagonViewsLayer(geometry: geometry, offset: offset)
                 
                 
@@ -81,14 +92,15 @@ public struct HexaSphereGridView<Popover: View>: View {
                     VStack(spacing: 0) {
                         content
                             .frame(minWidth: 120)
-                                                .padding( .all, 8)
-                                                .padding( .vertical, 16)
-                                                .background(
-                                                    CustomPopoverContainer()
-                                                        .fill(Color.white)
-                                                        .shadow(radius: 4)
-                                                )
+                            .padding( .all, 8)
+                            .padding( .vertical, 16)
+                            .background(
+                                CustomPopoverContainer()
+                                    .fill(Color.white)
+                                    .shadow(radius: 4)
+                            )
                     }
+                    .scaleEffect(popoverScale(for: zoomLevel))
                     .transition(.scale.combined(with: .opacity))
                     .position(x: pos.x + offset.width,
                               y: pos.y + offset.height + size / 2 + 20)
@@ -98,6 +110,25 @@ public struct HexaSphereGridView<Popover: View>: View {
                 }
             }
             .contentShape(Rectangle())
+            .onChange(of: self.zoomLevel) { _ in
+                viewModel.highlightedSphereNode = nil
+            }
+            .onChange(of: viewModel.highlightedSphereNode) { newValue in
+                guard let node = newValue else { return }
+                showUnlockPaths = false
+                let pos = hexToPixel(node.coordinate(), size: hexSize)
+                withAnimation(.spring()) {
+                    self.position = CGSize(
+                        width: -pos.x,
+                        height: -pos.y
+                    )
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        showUnlockPaths = true
+                    }
+                }
+            }
             .onTapGesture {
                 viewModel.highlightedSphereNode = nil
             }
@@ -170,12 +201,17 @@ public struct HexaSphereGridView<Popover: View>: View {
                                 }
                             }
                     )
-            ).overlay(
+                
+            )
+            .overlay(
                 Group {
                     if showMiniMap {
                         miniMapView()
-                            .frame(width: 100, height: 100)
-                            .padding()
+                            .padding(.trailing)
+                            .padding(.top, (UIApplication.shared.connectedScenes
+                                                .compactMap { ($0 as? UIWindowScene)?.keyWindow?.safeAreaInsets.top }
+                                                .first ?? 20 ) + 10
+                                            )
                     }
                 },
                 alignment: .topTrailing

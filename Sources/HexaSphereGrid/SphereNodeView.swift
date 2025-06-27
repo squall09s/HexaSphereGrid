@@ -95,6 +95,7 @@ struct SphereNodeView: View {
                         image
                             .resizable()
                             .scaledToFit()
+                            .scaleEffect(1.5)
                             .foregroundColor(contentColor)
                             .padding(10)
                     }

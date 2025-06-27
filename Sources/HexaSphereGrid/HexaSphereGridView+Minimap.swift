@@ -78,16 +78,19 @@ extension HexaSphereGridView {
                                 .position(x: indicatorX, y: indicatorY)
                             
                         }
-                        .frame(width: 90, height: 90)
-                        .background(Color.black.opacity(0.1))
-                        .cornerRadius(8)
-                        .padding(.top, 24)
-                        .padding(.trailing, 16)
+                        .background(Color.white.opacity(0.5))
+                        .frame(width: 100, height: 100)
+                        .cornerRadius(10)
+                        .shadow(radius: 4)
                     }
                 }
             }
-            .frame(height: 110)
+            .padding(0)
+            .frame(height: 100)
+            .offset(y:-1)
         }
+        
     }
     
 }
+
