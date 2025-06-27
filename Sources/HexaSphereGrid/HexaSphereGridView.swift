@@ -57,8 +57,8 @@ public struct HexaSphereGridView<Popover: View>: View {
     private func popoverScale(for zoom: ZoomLevel) -> CGFloat {
         switch zoom {
         case .min: return 1.2
-        case .normal: return 1.2
-        case .max: return 0.6
+        case .normal: return 1
+        case .max: return 0.5
         }
     }
     
@@ -86,14 +86,11 @@ public struct HexaSphereGridView<Popover: View>: View {
                 if let _highlightedSphereNode = viewModel.highlightedSphereNode,
                    let content = popoverContent?(_highlightedSphereNode) {
                     
-                    let size = hexSize * _highlightedSphereNode.weight * 1.8
-                    let pos = hexToPixel(_highlightedSphereNode.coordinate(), size: hexSize)
-                
                     VStack(spacing: 0) {
                         content
                             .frame(minWidth: 120)
-                            .padding( .all, 8)
-                            .padding( .vertical, 16)
+                            .padding(.all, 8)
+                            .padding(.vertical, 16)
                             .background(
                                 CustomPopoverContainer()
                                     .fill(Color.white)
@@ -102,8 +99,8 @@ public struct HexaSphereGridView<Popover: View>: View {
                     }
                     .scaleEffect(popoverScale(for: zoomLevel))
                     .transition(.scale.combined(with: .opacity))
-                    .position(x: pos.x + offset.width,
-                              y: pos.y + offset.height + size / 2 + 20)
+                    .position(x: geometry.size.width / 2,
+                              y: geometry.size.height / 2)
                     .onTapGesture {
                         viewModel.highlightedSphereNode = nil
                     }
@@ -120,7 +117,7 @@ public struct HexaSphereGridView<Popover: View>: View {
                 withAnimation(.spring()) {
                     self.position = CGSize(
                         width: -pos.x,
-                        height: -pos.y
+                        height: -pos.y  - hexSize
                     )
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
